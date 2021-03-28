@@ -1,0 +1,352 @@
+# An example file to show off how the game works.
+# The author makes no claim of right to this file.
+
+ {
+   "Initial State" : "GREEN",
+   "Global Functions" :
+ "
+   function GOTO (arg) is
+      set command to {}
+      set x to GetX(arg)
+      if x < 0 then
+         while x < 0 do
+            set command to PushBack(command, 'Left')
+            set x to x + 1
+         end
+      elseif x > 0 then
+         while x > 0 do
+            set command to PushBack(command, 'Right')
+            set x to x - 1
+         end
+      end
+      set y to GetY(arg)
+      if y < 0 then
+         while y < 0 do
+            set command to PushBack(command, 'Down')
+            set y to y + 1
+         end
+      elseif y > 0 then
+         while y > 0 do
+            set command to PushBack(command, 'Up')
+            set y to y - 1
+         end
+      end
+      call Enqueue(command)
+      return arg
+   end
+
+   function FETCH (arg) is
+      call GOTO (arg)
+      call Enqueue('Grab')
+      call GOTO (-arg)
+      call Enqueue('Drop')
+      return arg
+   end
+
+   function TRANSFORM (arg) is
+      call GOTO (arg)
+      call Enqueue('Make White')
+      call GOTO (-arg)
+      return arg
+   end
+ ",
+   "States" :
+    {
+      "BLUE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set nears to FindNearest('BLUE')
+      if 0 <> Size(nears) then
+         for vec in nears do
+            call FETCH(vec)
+         end
+         call Enqueue('BLUE')
+      else
+         call Task('GREEN DRONE', arg)
+         set nears to FindNearest('GREEN')
+         if 0 <> Size(nears) then
+            call GOTO(nears[0])
+            call Enqueue('PRE BLUE')
+         end
+      end
+      call Leave()
+      return ''
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "PRE BLUE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      call Enqueue('Grab')
+      call Enqueue('Make White')
+      call Enqueue('Drop')
+      call Enqueue('BLUE')
+      call Leave()
+      return ''
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "BLUE DRONE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set nears to FindNearest('BLACK')
+      if 0 <> Size(nears) then
+         for vec in nears do
+            call TRANSFORM(vec)
+         end
+         call Enqueue('BLUE DRONE')
+      else
+         call Enqueue('Do Nothing')
+      end
+      call Leave()
+      return ''
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "BLUE DRONE GRAY" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set nears to FindNearest('GRAY')
+      if 0 <> Size(nears) then
+         for vec in nears do
+            call TRANSFORM(vec)
+         end
+         call Enqueue('BLUE DRONE GRAY')
+      else
+         call Enqueue('Do Nothing')
+      end
+      call Leave()
+      return ''
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "GREEN" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      call Task('PRE BLUE', arg)
+      (* We Report here because if we start activating drones now,
+         then the blue collector will chase after them! *)
+      call Report()
+      return arg
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "GREEN DRONE" :
+       {
+         "Data" : "one",
+         "Functions" :
+ "
+   function Update (arg) is
+      if 0 <> FreeAgents() then
+         if 0 = one then
+            call Task('BLUE DRONE', arg)
+            set one to 1
+         else
+            call Task('BLUE DRONE GRAY', arg)
+            (* If there is more than one active drone, then they will conflict with one another *)
+            call Report()
+         end
+      end
+      return arg
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Left" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Command('Left')
+         return 'Left'
+      else
+         call Leave()
+         return ''
+      end
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Right" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Command('Right')
+         return 'Right'
+      else
+         call Leave()
+         return ''
+      end
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Up" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Command('Up')
+         return 'Up'
+      else
+         call Leave()
+         return ''
+      end
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Down" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Command('Down')
+         return 'Down'
+      else
+         call Leave()
+         return ''
+      end
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Grab" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         set seen to Look(MakeVec(0, 0, 0))
+         if !(('WHITE' = seen) | ('BLACK' = seen) | ('GRAY' = seen)) then
+            call Command('Action')
+            return 'Action'
+         end
+      end
+      call Leave()
+      return ''
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Drop" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Command('Drop')
+         return 'Drop'
+      else
+         call Leave()
+         return ''
+      end
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Do Nothing" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      return arg
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       },
+      "Make White" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set seen to Look(MakeVec(0, 0, 0))
+      if 'BLUE' = seen then
+         call Leave()
+      elseif 'WHITE' <> seen then
+         call Command('Action')
+      else
+         call Leave()
+      end
+      return arg
+   end
+
+   function OnUpdate(arg) is
+      return arg
+   end
+ "
+       }
+    }
+ }
