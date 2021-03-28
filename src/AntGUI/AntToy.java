@@ -100,6 +100,8 @@ public final class AntToy
             public void actionPerformed(ActionEvent arg0)
             {
                 JFileChooser filePicker = new JFileChooser();
+                debugConsole.setText("");
+                EnterDebugger.queue.clear();
                 if (JFileChooser.APPROVE_OPTION == filePicker.showOpenDialog(frame))
                 {
                     File selectedFile = filePicker.getSelectedFile();

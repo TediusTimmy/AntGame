@@ -41,46 +41,12 @@ public final class FindNearest extends StandardUnaryFunction
         if (arg instanceof StringValue)
         {
             String name = ((StringValue)arg).value;
-            Color color;
-            switch (name)
+            Color color = convertColorNameToColor(name);
+            if (null == color)
             {
-            case "BLUE":
-                color = Color.BLUE;
-                break;
-            case "GREEN":
-                color = Color.GREEN;
-                break;
-            case "RED":
-                color = Color.RED;
-                break;
-            case "CYAN":
-                color = Color.CYAN;
-                break;
-            case "YELLOW":
-                color = Color.YELLOW;
-                break;
-            case "MAGENTA":
-                color = Color.MAGENTA;
-                break;
-            case "LIGHT GRAY":
-                color = Color.LIGHT_GRAY;
-                break;
-            case "DARK GRAY":
-                color = Color.DARK_GRAY;
-                break;
-            case "BLACK":
-                color = Color.BLACK;
-                break;
-            case "WHITE":
-                color = Color.WHITE;
-                break;
-            case "GRAY":
-                color = Color.GRAY;
-                break;
-            default:
                 throw new FatalException("Name '" + name + "' is invalid to find.");
             }
-            LinkedList<Cell> nearest = findNearest(context.world, context.cell.x, context.cell.y, color, context.world.LOOK, true);
+            LinkedList<Cell> nearest = findNearest(context.world, context.cell.x, context.cell.y, color, context.world.LOOK, false);
             ArrayList<ValueType> result = new ArrayList<ValueType>();
             for (Cell cell : nearest)
             {
@@ -93,6 +59,50 @@ public final class FindNearest extends StandardUnaryFunction
         {
             throw new TypedOperationException("FindNearest called without string name of type to find.");
         }
+    }
+
+    public static Color convertColorNameToColor(String name)
+    {
+        Color color = null;
+        switch (name)
+        {
+        case "BLUE":
+            color = Color.BLUE;
+            break;
+        case "GREEN":
+            color = Color.GREEN;
+            break;
+        case "RED":
+            color = Color.RED;
+            break;
+        case "CYAN":
+            color = Color.CYAN;
+            break;
+        case "YELLOW":
+            color = Color.YELLOW;
+            break;
+        case "MAGENTA":
+            color = Color.MAGENTA;
+            break;
+        case "LIGHT GRAY":
+            color = Color.LIGHT_GRAY;
+            break;
+        case "DARK GRAY":
+            color = Color.DARK_GRAY;
+            break;
+        case "BLACK":
+            color = Color.BLACK;
+            break;
+        case "WHITE":
+            color = Color.WHITE;
+            break;
+        case "GRAY":
+            color = Color.GRAY;
+            break;
+        default:
+            // Handle this in the caller.
+        }
+        return color;
     }
 
     public static int ManhattanDistance(int x1, int y1, int x2, int y2)
@@ -133,6 +143,44 @@ public final class FindNearest extends StandardUnaryFunction
         addNeighborMaybe(temp, known, frontier);
     }
 
+    public static boolean globalLook(Cell chello, Color color)
+    {
+        boolean contains = false;
+        for (Cell cell : chello.resources)
+        {
+            if (color == cell.color)
+            {
+                contains = true;
+                break;
+            }
+        }
+        if (color == chello.color)
+        {
+            contains = true;
+        }
+        return contains;
+    }
+
+    public static boolean localLook(Cell chello, Color color)
+    {
+        boolean contains = false;
+        if (true == chello.resources.isEmpty())
+        {
+            if (color == chello.color)
+            {
+                contains = true;
+            }
+        }
+        else
+        {
+            if (color == chello.resources.get(0).color)
+            {
+                contains = true;
+            }
+        }
+        return contains;
+    }
+
     /**
      * Breadth-first search for closest cells.
      * @param world The world.
@@ -140,10 +188,10 @@ public final class FindNearest extends StandardUnaryFunction
      * @param y The y location to start at.
      * @param color The color to find. The Cell must be this color, or have a resource of this color.
      * @param max The maximum distance to search.
-     * @param topOnly Only look at the top-most resource (teleport can see hidden things).
+     * @param global If true, look at more than the top-most thing.
      * @return The list of cells, all equally near, that are nearest to the start.
      */
-    public static LinkedList<Cell> findNearest(World world, int x, int y, Color color, int max, boolean topOnly)
+    public static LinkedList<Cell> findNearest(World world, int x, int y, Color color, int max, boolean global)
     {
         LinkedList<Cell> known = new LinkedList<Cell>();
         LinkedList<Cell> frontier = new LinkedList<Cell>();
@@ -157,20 +205,16 @@ public final class FindNearest extends StandardUnaryFunction
         {
             Cell front = frontier.removeFirst();
             int dist = ManhattanDistance(x, y, front.x, front.y);
-            boolean contains = false;
-            for (Cell cell : front.resources)
+            boolean present;
+            if (true == global)
             {
-                if (color == cell.color)
-                {
-                    contains = true;
-                    break;
-                }
-                if (true == topOnly)
-                {
-                    break;
-                }
+                present = globalLook(front, color);
             }
-            if ((color == front.color) || (true == contains))
+            else
+            {
+                present = localLook(front, color);
+            }
+            if (true == present)
             {
                 if (dist < closest)
                 {

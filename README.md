@@ -74,6 +74,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Enqueue (array) # Returns one. Argument should be an array of string. Performs the string version of the function over the array.
 * double Enqueue (string) # Returns one. Argument should be a State name. Queues up the named State to run later by placing it at the end of the queue, where it belongs.
 * double EnterDebugger () # Returns zero. Function described below.
+* array FindAll (string) # Given the color name, return an array of vectors of all visible instances of color, within visible range, relative to the caller.
 * array FindNearest (string) # Given the color name, return an array of vectors of the nearest instances of color, within visible range, relative to the caller.
 * double Follow (array) # Returns one. Argument should be an array of string. "Queues" up the named States to follow the current State in their array order.
 * double Follow (string) # Returns one. "Queues" up the named State to follow the current State.

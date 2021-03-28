@@ -21,6 +21,7 @@ import java.util.List;
 
 import StateEngine.StdLib.Error;
 import StateEngine.StdLib.Fatal;
+import StateEngine.StdLib.FindAll;
 import StateEngine.StdLib.FindNearest;
 import StateEngine.StdLib.Follow;
 import StateEngine.StdLib.FreeAgents;
@@ -84,6 +85,7 @@ public class ExecutorBuilder extends esl2.parser.ExecutorBuilder
         addFunction("Teleport", new Teleport(), 1, executor, funs, frameInfo);
         addFunction("Inform", new Inform(), 1, executor, funs, frameInfo);
         addFunction("Inject", new Inject(), 1, executor, funs, frameInfo);
+        addFunction("FindAll", new FindAll(), 1, executor, funs, frameInfo);
 
         addFunction("Task", new Task(), 2, executor, funs, frameInfo);
     }

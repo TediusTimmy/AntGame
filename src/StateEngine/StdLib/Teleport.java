@@ -60,7 +60,7 @@ public final class Teleport extends StandardUnaryFunction
             {
                 throw new FatalException("Tried to teleport out of the universe.");
             }
-            LinkedList<Cell> nearest = FindNearest.findNearest(context.world, destx, desty, Color.YELLOW, Integer.MAX_VALUE, false);
+            LinkedList<Cell> nearest = FindNearest.findNearest(context.world, destx, desty, Color.YELLOW, Integer.MAX_VALUE, true);
             // The search is a global search, so it should never return empty: it just may return the portal that you're on.
             Cell to = nearest.getFirst();
             context.cell.parent.resources.remove(context.cell);
