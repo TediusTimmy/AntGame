@@ -310,10 +310,21 @@ public final class World
                     cost = 1;
                 }
                 break;
+            case "Report":
+                if ((true == cell.parent.resources.isEmpty()) || (Color.GREEN != cell.parent.resources.getFirst().color))
+                {
+                    everythingIsFucked = true;
+                    context.debugger.EnterDebugger("BLUE tried to Report for Orders with no GREEN.", context);
+                    return RESULT.BROKEN;
+                }
+                context.cell.active = false;
+                context.cell.energy = 0;
+                context.cell.machine.states.clear();
+                break;
             default:
                 everythingIsFucked = true;
                 context.debugger.EnterDebugger("Command called with invalid command!", context);
-                return RESULT.NONE;
+                return RESULT.BROKEN;
             }
 
             Cell newParent = null;
@@ -400,9 +411,23 @@ public final class World
             }
             try
             {
-                // Greens are incapable of acting, so we ignore what happens here.
+                // Greens have only one action.
                 // YES : blues cannot act until the next turn after being activated by a green.
                 cell.update(context);
+                switch (cell.machine.next)
+                {
+                case "":
+                    break;
+                case "Report":
+                    context.cell.active = false;
+                    context.cell.energy = 0;
+                    context.cell.machine.states.clear();
+                    break;
+                default:
+                    everythingIsFucked = true;
+                    context.debugger.EnterDebugger("Command called with invalid command!", context);
+                    return RESULT.BROKEN;
+                }
             }
             catch (TypedOperationException | FatalException e)
             {

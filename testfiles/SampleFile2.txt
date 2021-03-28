@@ -81,15 +81,15 @@
  "
    function Update (arg) is
       if 0 = FreeAgents() then
-         call Enqueue('POST BLUE')
+         call Command('Report')
       else
          call Enqueue('Grab')
          call Enqueue('Make White')
          call Enqueue('Drop')
          call Enqueue('Task')
          call Enqueue('BLUE')
+         call Leave()
       end
-      call Leave()
       return ''
    end
 
@@ -124,7 +124,9 @@
          "Functions" :
  "
    function Update (arg) is
-      call TRANSFORM(arg)
+      if 'WHITE' <> Look(arg) then
+         call TRANSFORM(arg)
+      end
       call Enqueue('Report')
       call Leave()
       return ''
@@ -142,7 +144,7 @@
  "
    function Update (arg) is
       call Task('PRE BLUE', arg)
-      call Report()
+      call Command('Report')
       return arg
    end
 
@@ -165,7 +167,7 @@
             set temp to PopFront(temp)
          end
          if 0 = Size(tasks) then
-            call Report()
+            call Command('Report')
          end
       end
       while 0 <> FreeAgents() & 0 <> Size(tasks) do
@@ -325,7 +327,7 @@
          "Functions" :
  "
    function Update (arg) is
-      call Report()
+      call Command('Report')
       return arg
    end
 

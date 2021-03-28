@@ -40,7 +40,6 @@ import StateEngine.StdLib.Rewind;
 import StateEngine.StdLib.Enqueue;
 import StateEngine.StdLib.EnterDebugger;
 import StateEngine.StdLib.Rand;
-import StateEngine.StdLib.Report;
 import StateEngine.StdLib.Skip;
 import StateEngine.StdLib.Task;
 import StateEngine.StdLib.Teleport;
@@ -66,7 +65,6 @@ public class ExecutorBuilder extends esl2.parser.ExecutorBuilder
         addFunction("Rand", new Rand(), 0, executor, funs, frameInfo);
         addFunction("CurrentEnergy", new CurrentEnergy(), 0, executor, funs, frameInfo);
         addFunction("FreeAgents", new FreeAgents(), 0, executor, funs, frameInfo);
-        addFunction("Report", new Report(), 0, executor, funs, frameInfo);
         addFunction("Leave", new Leave(), 0, executor, funs, frameInfo);
         addFunction("Abandon", new Abandon(), 0, executor, funs, frameInfo);
         addFunction("Inventory", new Inventory(), 0, executor, funs, frameInfo);

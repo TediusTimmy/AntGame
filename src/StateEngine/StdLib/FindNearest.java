@@ -25,7 +25,6 @@ import AntWorld.Cell;
 import AntWorld.World;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.types.ArrayValue;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -36,7 +35,7 @@ public final class FindNearest extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (arg instanceof StringValue)
         {
@@ -44,7 +43,7 @@ public final class FindNearest extends StandardUnaryFunction
             Color color = convertColorNameToColor(name);
             if (null == color)
             {
-                throw new FatalException("Name '" + name + "' is invalid to find.");
+                throw new TypedOperationException("Name '" + name + "' is invalid to find.");
             }
             LinkedList<Cell> nearest = findNearest(context.world, context.cell.x, context.cell.y, color, context.world.LOOK, false);
             ArrayList<ValueType> result = new ArrayList<ValueType>();

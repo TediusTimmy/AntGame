@@ -157,7 +157,7 @@
       call Task('PRE BLUE', arg)
       (* We Report here because if we start activating drones now,
          then the blue collector will chase after them! *)
-      call Report()
+      call Command('Report')
       return arg
    end
 
@@ -179,7 +179,7 @@
          else
             call Task('BLUE DRONE GRAY', arg)
             (* If there is more than one active drone, then they will conflict with one another *)
-            call Report()
+            call Command('Report')
          end
       end
       return arg

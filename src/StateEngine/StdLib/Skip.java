@@ -19,7 +19,6 @@ package StateEngine.StdLib;
 
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -28,7 +27,7 @@ public final class Skip extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (arg instanceof StringValue)
         {
@@ -40,7 +39,7 @@ public final class Skip extends StandardUnaryFunction
             }
             if (true == context.cell.machine.states.getLast().isEmpty())
             {
-                throw new FatalException("Error skipping to state '" + name + "' as state is not in current queue.");
+                throw new TypedOperationException("Error skipping to state '" + name + "' as state is not in current queue.");
             }
         }
         else

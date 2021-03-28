@@ -22,7 +22,6 @@ import java.util.LinkedList;
 
 import AntWorld.Cell;
 import StateEngine.CtrlCCtrlV.CallingContext;
-import esl2.types.FatalException;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 import esl2.types.Vector;
@@ -32,11 +31,11 @@ public final class Teleport extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (Color.GREEN == context.cell.color)
         {
-            throw new FatalException("GREEN tried to teleport.");
+            throw new TypedOperationException("GREEN tried to teleport.");
         }
         boolean contains = false;
         for (Cell cell : context.cell.parent.resources)
@@ -49,7 +48,7 @@ public final class Teleport extends StandardUnaryFunction
         }
         if (false == contains)
         {
-            throw new FatalException("Tried to teleport with no teleporter.");
+            throw new TypedOperationException("Tried to teleport with no teleporter.");
         }
         if (arg instanceof VectorValue)
         {
@@ -58,7 +57,7 @@ public final class Teleport extends StandardUnaryFunction
             int desty = context.cell.y - (int)value.y; // Yes, y is backwards.
             if (null == context.world.getCellAt(destx, desty))
             {
-                throw new FatalException("Tried to teleport out of the universe.");
+                throw new TypedOperationException("Tried to teleport out of the universe.");
             }
             LinkedList<Cell> nearest = FindNearest.findNearest(context.world, destx, desty, Color.YELLOW, Integer.MAX_VALUE, true);
             // The search is a global search, so it should never return empty: it just may return the portal that you're on.

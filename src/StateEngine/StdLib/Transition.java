@@ -20,7 +20,6 @@ package StateEngine.StdLib;
 import StateEngine.State;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -29,7 +28,7 @@ public final class Transition extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (arg instanceof StringValue)
         {
@@ -37,7 +36,7 @@ public final class Transition extends StandardUnaryFunction
             State state = context.environment.stateArchitypes.get(name);
             if (null == state)
             {
-                throw new FatalException("No state with name '" + name + "'.");
+                throw new TypedOperationException("No state with name '" + name + "'.");
             }
             context.cell.machine.states.getLast().set(0, new State(state));
         }

@@ -19,7 +19,6 @@ package StateEngine.StdLib;
 
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -28,7 +27,7 @@ public final class Rewind extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (arg instanceof StringValue)
         {
@@ -41,7 +40,7 @@ public final class Rewind extends StandardUnaryFunction
             }
             if (true == context.cell.machine.states.isEmpty())
             {
-                throw new FatalException("Error rewinding stack to state '" + name + "' as state is not in stack.");
+                throw new TypedOperationException("Error rewinding stack to state '" + name + "' as state is not in stack.");
             }
         }
         else

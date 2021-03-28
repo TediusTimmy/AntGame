@@ -17,10 +17,7 @@
 
 package StateEngine.StdLib;
 
-import java.awt.Color;
-
 import StateEngine.CtrlCCtrlV.CallingContext;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -29,12 +26,8 @@ public final class Command extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
-        if (Color.GREEN == context.cell.color)
-        {
-            throw new FatalException("GREEN tried to execute a Command.");
-        }
         if (arg instanceof StringValue)
         {
             context.top().next = ((StringValue)arg).value;

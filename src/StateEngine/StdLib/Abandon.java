@@ -19,19 +19,19 @@ package StateEngine.StdLib;
 
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
+import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
 public final class Abandon extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context) throws FatalException
+    public ValueType fun(CallingContext context) throws TypedOperationException
     {
         context.cell.machine.states.removeLast();
         if (true == context.cell.machine.states.isEmpty())
         {
-            throw new FatalException("Error abandoning top of stack: stack is now empty.");
+            throw new TypedOperationException("Error abandoning top of stack: stack is now empty.");
         }
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }

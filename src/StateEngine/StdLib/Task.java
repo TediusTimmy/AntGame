@@ -26,7 +26,6 @@ import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
 import esl2.engine.FlowControl;
 import esl2.engine.statement.Statement;
-import esl2.types.FatalException;
 import esl2.types.ProgrammingException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
@@ -40,7 +39,7 @@ public final class Task extends Statement
         super(null);
     }
 
-    public static ValueType fun(CallingContext context, ValueType arg1, ValueType arg2) throws TypedOperationException, FatalException
+    public static ValueType fun(CallingContext context, ValueType arg1, ValueType arg2) throws TypedOperationException
     {
         State state = null;
         if (arg1 instanceof StringValue)
@@ -49,7 +48,7 @@ public final class Task extends Statement
             state = context.environment.stateArchitypes.get(name);
             if (null == state)
             {
-                throw new FatalException("No state with name '" + name + "'.");
+                throw new TypedOperationException("No state with name '" + name + "'.");
             }
         }
         else
@@ -84,7 +83,7 @@ public final class Task extends Statement
     }
 
     @Override
-    public FlowControl execute(esl2.engine.CallingContext context) throws TypedOperationException, FatalException
+    public FlowControl execute(esl2.engine.CallingContext context) throws TypedOperationException
     {
         try
         {

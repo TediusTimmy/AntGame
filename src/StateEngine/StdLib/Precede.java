@@ -23,7 +23,6 @@ import StateEngine.State;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
 import esl2.types.ArrayValue;
-import esl2.types.FatalException;
 import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -32,7 +31,7 @@ public final class Precede extends StandardUnaryFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
         if (arg instanceof StringValue)
         {
@@ -40,7 +39,7 @@ public final class Precede extends StandardUnaryFunction
             State state = context.environment.stateArchitypes.get(name);
             if (null == state)
             {
-                throw new FatalException("No state with name '" + name + "'.");
+                throw new TypedOperationException("No state with name '" + name + "'.");
             }
             context.cell.machine.states.getLast().addFirst(new State(state));
         }
@@ -56,7 +55,7 @@ public final class Precede extends StandardUnaryFunction
                     State state = context.environment.stateArchitypes.get(name);
                     if (null == state)
                     {
-                        throw new FatalException("No state with name '" + name + "'.");
+                        throw new TypedOperationException("No state with name '" + name + "'.");
                     }
                     context.cell.machine.states.getLast().addFirst(new State(state));
                 }

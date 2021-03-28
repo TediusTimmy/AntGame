@@ -19,14 +19,14 @@ package StateEngine.StdLib;
 
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
+import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
 public final class Leave extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context) throws FatalException
+    public ValueType fun(CallingContext context) throws TypedOperationException
     {
         context.cell.machine.states.getLast().removeFirst();
         if (true == context.cell.machine.states.getLast().isEmpty())
@@ -35,7 +35,7 @@ public final class Leave extends StandardConstantFunction
         }
         if (true == context.cell.machine.states.isEmpty())
         {
-            throw new FatalException("Error leaving state: stack is now empty.");
+            throw new TypedOperationException("Error leaving state: stack is now empty.");
         }
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }

@@ -90,7 +90,6 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Push (array) # Returns one. Argument should be an array of string. Push a new queue to the top of the stack and add these States to it in their array order.
 * double Push (string) # Returns one. Push a new queue to the top of the stack and add this State to it.
 * double Rand () # Returns the next random number from the cell's personal random number generator.
-* double Report () # Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN.
 * double Rewind (string) # Returns one. Rewind the stack to a stack frame that begins with the named State. It is an error if no such State is found.
 * double Skip (string) # Returns one. Pop States from the current queue until the named State is found. It is an error if no such State is found.
 * double Task (string, value) # Give a free agent in the current location the starting named State with starting data. Return one if an agent was Tasked and zero if not.
@@ -126,6 +125,7 @@ All commands expend energy to perform. It takes four energy to move onto or off 
   * Interacting with a LIGHT GRAY will teleport the BLUE to a random location one in five times. These are unpredictable.
   * Interacting with a DARK GRAY will destroy the BLUE one in four times. These are dangerous.
 * Drop - If something is held, drop it. If not holding anything, no energy is used and the turn is wasted.
+* Report - Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN.
 
 ### The Debugger
 The debugger is a simple translation to the debug console of a console debugger. It is very primitive. One enters commands to the debugger in the input box, and sends them to the debugger with by either pressing enter, or by clicking on the button. At any time, you can type "help" and it will tell you that it doesn't understand what "help" is and then list what it does understand.

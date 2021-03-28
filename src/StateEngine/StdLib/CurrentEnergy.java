@@ -21,18 +21,18 @@ import java.awt.Color;
 
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.types.DoubleValue;
-import esl2.types.FatalException;
+import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
 public final class CurrentEnergy extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context) throws FatalException
+    public ValueType fun(CallingContext context) throws TypedOperationException
     {
         if (Color.GREEN == context.cell.color)
         {
-            throw new FatalException("GREEN don't have energy.");
+            throw new TypedOperationException("GREEN don't have energy.");
         }
         return new DoubleValue(context.cell.energy);
     }
