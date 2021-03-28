@@ -69,7 +69,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 
 ## Standard Library Additions
 * double Abandon () # Pops the current State queue from the stack. Abandons the current stack frame.
-* string Command (string) # Gives a BLUE command. Commands are explained below. Returns the command. GREEN can't give commands.
+* string Command (string) # Gives a command. Commands are explained below. Returns the command. GREEN can only give 'Report' commands.
 * double CurrentEnergy () # Returns the current amount of energy a BLUE has. Is an error for a GREEN to call this.
 * double Enqueue (array) # Returns one. Argument should be an array of string. Performs the string version of the function over the array.
 * double Enqueue (string) # Returns one. Argument should be a State name. Queues up the named State to run later by placing it at the end of the queue, where it belongs.
@@ -111,7 +111,7 @@ A visualization of the AI engine:
 The numbers `1-9` and letters `A-C` represent States that are set to execute eventually, with `1` being the state that is currently being executed. Conceptually, the natural insertion points are marked `#` and `$`. Location `$` represents where something would be added to a queue, and `#` represents where something would be added to a stack. So, Enqueue inserts States at `$`, and Push inserts States at `#`. There are other places that we can insert States, though, from the perspective of the currently executing State. Preceding `1` with a State at `@` is like Pushing it, but if that State calls `Abandon`, then `1` will not be returned to. Injecting a State between `1` and `7` will be like Enqueueing it, but if `Abandon` is called, it will still be run. Finally, a State can Follow `1` by being put between `1` and `2`, which really doesn't fit in with the rest of these. (Humorously, Inject was implemented as an afterthought, due to building this diagram, and me wanting an orthogonal command set.)
 
 ### Commands
-All commands expend energy to perform. It takes four energy to move onto or off of a RED. All other commands take one energy. These are the commands:
+All commands, except Report, expend energy to perform. It takes four energy to move onto or off of a RED. All other commands take one energy. These are the commands:
 * Up - Move up on the screen in the universe. Movement is with respect to what the player sees, not the global coordinates of the universe.
 * Down - Move down on the screen in the universe.
 * Left - Move left on the screen in the universe.
