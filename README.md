@@ -138,4 +138,8 @@ The debugger is a simple translation to the debug console of a console debugger.
   * print <variable> - prints out the value of the named variable
 
 That's it! This should suffice for most rudimentary debugging of program errors.
- 
+
+## Commands vs Library Functions
+What is the point between this strange distinction between Commands and other things that happen in the Standard Library. In general, Commands are things that interface with the external world. The Standard Library changes the internal world of the AI. Only Inform and Task break this, as the current Command implementation doesn't have an real means to pass information out. If I refactor the manner of handling Commands, and I REALLY need to refactor it, then Inform and Task may become commands themselves. They'll likely remain commands with a function covering up the implementation.
+
+In normal AI tasks, the AI commands something (a fin to cant, the engine to gimbal) and then it has to wait, enter a new update cycle, and evaluate the results of what was commanded before. Sometimes there's mechanical failure, or a physical limitation has been reached, or ... everything happened correctly. At this point, though, the AI needs to reevaluate the goal and how it intends to achieve that goal, and make a new command. That's what I'm trying to emulate here. Commands are meant to emulate those things that need real time to actually happen in the real world. And, Report does meet that distinction, even if it seems like a cheap cop-out by me to make sure that Report doesn't occur in tandem with a move.
