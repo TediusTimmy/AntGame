@@ -168,239 +168,14 @@ public final class World
                 return RESULT.BROKEN;
             }
 
-                // NOW DEAD TEST CODE
-            /*for (Cell chello : cell.parent.resources)
+            RESULT temp = handleBlueMove(cell);
+            if (RESULT.BROKEN == temp)
             {
-                if ((Color.BLUE == chello.color) && (false == chello.active))
-                {
-                    chello.active = true;
-                    chello.energy = ENERGY;
-                    chello.machine.states.add(new LinkedList<State>());
-                    chello.machine.states.getFirst().add(new State(env.stateArchitypes.get(env.initialState)));
-                }
-            }*/
-
-            int cost = 0;
-            boolean attemptMove = false;
-            int chellox = cell.x, chelloy = cell.y;
-            switch (cell.machine.next)
+                return temp;
+            }
+            else if (RESULT.WIN == temp)
             {
-            case "":
-                break;
-            case "Left":
-                if (cell.x > 0)
-                {
-                    attemptMove = true;
-                    --chellox;
-                }
-                break;
-            case "Right":
-                if (cell.x < x - 1)
-                {
-                    attemptMove = true;
-                    ++chellox;
-                }
-                break;
-            case "Up":
-                if (cell.y > 0)
-                {
-                    attemptMove = true;
-                    --chelloy;
-                }
-                break;
-            case "Down":
-                if (cell.y < y - 1)
-                {
-                    attemptMove = true;
-                    ++chelloy;
-                }
-                break;
-            case "Action":
-                cost = 1;
                 someUpdate = true;
-                Cell top = cell.parent.getFirstNot(cell);
-                if (null != top)
-                {
-                    // Grab it
-                    if (Color.RED == top.color)
-                    {
-                        --top.energy;
-                        if (0 == top.energy)
-                        {
-                            cell.parent.resources.remove(top);
-                        }
-                    }
-                    else if (Color.DARK_GRAY == top.color)
-                    {
-                        cell.parent.resources.remove(top);
-                        // RULES: DARK GREY has a 1/4 chance of destroying a BLUE that interacts with it.
-                        if (top.draw_rand.getNext() < 0.25)
-                        {
-                            cell.active = false;
-                            cell.energy = -ENERGY;
-                        }
-                    }
-                    else if (Color.LIGHT_GRAY == top.color)
-                    {
-                        cell.parent.resources.remove(top);
-                        // RULES: LIGHT GREY has a 1/5 chance of teleporting a BLUE to a random location.
-                        if (top.draw_rand.getNext() < 0.20)
-                        {
-                            int newx = (int)(top.draw_rand.getNext() * x);
-                            int newy = (int)(top.draw_rand.getNext() * y);
-                            cell.x = newx;
-                            cell.y = newy;
-                            Cell newParent = getCellAt(newx, newy);
-                            cell.parent.resources.remove(cell);
-                            cell.parent = newParent;
-                            newParent.addResource(cell);
-                        }
-                    }
-                    else
-                    {
-                        if (null == cell.held)
-                        {
-                            if ((Color.BLUE != top.color) || (false == top.active))
-                            {
-                                cell.held = top;
-                                cell.parent.resources.remove(top);
-                            }
-                            else
-                            {
-                                cost = 0;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // Transform it
-                    if (Color.BLACK == cell.parent.color)
-                    {
-                        cell.parent.color = Color.GRAY;
-                        --blacks;
-                    }
-                    else if (Color.WHITE == cell.parent.color)
-                    {
-                        cell.parent.color = Color.GRAY;
-                        --whites;
-                    }
-                    else
-                    {
-                        if (cell.parent.draw_rand.getNext() < 0.5)
-                        {
-                            cell.parent.color = Color.BLACK;
-                            ++blacks;
-                        }
-                        else
-                        {
-                            cell.parent.color = Color.WHITE;
-                            ++whites;
-                        }
-                    }
-                }
-                break;
-            case "Drop":
-                if (null != cell.held)
-                {
-                    cell.held.x = cell.parent.x;
-                    cell.held.y = cell.parent.y;
-                    cell.parent.addResource(cell.held);
-                    cell.held = null;
-                    cost = 1;
-                }
-                break;
-            case "Report":
-                if ((true == cell.parent.resources.isEmpty()) || (Color.GREEN != cell.parent.resources.getFirst().color))
-                {
-                    everythingIsFucked = true;
-                    context.debugger.EnterDebugger("BLUE tried to Report for Orders with no GREEN.", context);
-                    return RESULT.BROKEN;
-                }
-                context.cell.active = false;
-                context.cell.energy = 0;
-                context.cell.machine.states.clear();
-                break;
-            default:
-                everythingIsFucked = true;
-                context.debugger.EnterDebugger("Command called with invalid command!", context);
-                return RESULT.BROKEN;
-            }
-
-            Cell newParent = null;
-            boolean succeededMove = false;
-            if (true == attemptMove)
-            {
-                newParent = getCellAt(chellox, chelloy);
-                if ((true == newParent.resources.isEmpty()) || (Color.MAGENTA != newParent.resources.getFirst().color))
-                {
-                    succeededMove = true;
-                }
-                // RULES: Moving onto a MAGENTA while carrying a CYAN destroys the MAGENTA and CYAN.
-                else if ((null != cell.held) && (Color.CYAN == cell.held.color))
-                {
-                    succeededMove = true;
-                    cell.held = null; // It dead!
-                    newParent.resources.clear(); // It dead, too!
-                }
-
-                if (true == succeededMove)
-                {
-                    cell.x = chellox;
-                    cell.y = chelloy;
-                    someUpdate = true;
-
-                    // RULES: It costs 4 to move onto or off of a RED obstruction.
-                    boolean actuallyRed = false;
-                    for (Cell chello : cell.parent.resources)
-                    {
-                        if (Color.RED == chello.color)
-                        {
-                            actuallyRed = true;
-                        }
-                    }
-                    for (Cell chello : newParent.resources)
-                    {
-                        if (Color.RED == chello.color)
-                        {
-                            actuallyRed = true;
-                        }
-                    }
-                    if (true == actuallyRed)
-                    {
-                        cost = 4;
-                    }
-                    else
-                    {
-                        cost = 1;
-                    }
-                }
-            }
-            if (0 != cost)
-            {
-                cell.energy -= cost;
-
-                if (true == succeededMove)
-                {
-                    cell.parent.resources.remove(cell);
-                    cell.parent = newParent;
-                    newParent.addResource(cell);
-                    // If succeededMove is true, newParent will not be null.
-                    // If newParent IS null, then something VERY BAD has happened, and we want it to crash.
-
-                    // RULES: Ending on a GREEN base replenishes a BLUE's energy.
-                    Cell isGreen = newParent.resources.peek();
-                    if ((null != isGreen) && (Color.GREEN == isGreen.color))
-                    {
-                        cell.energy = ENERGY;
-                    }
-                }
-
-                if (cell.energy <= 0)
-                {
-                    cell.active = false;
-                    cell.machine.states.clear();
-                }
             }
         }
         for (Cell cell : greens)
@@ -411,28 +186,28 @@ public final class World
             }
             try
             {
-                // Greens have only one action.
                 // YES : blues cannot act until the next turn after being activated by a green.
                 cell.update(context);
-                switch (cell.machine.next)
-                {
-                case "":
-                    break;
-                case "Report":
-                    context.cell.active = false;
-                    context.cell.energy = 0;
-                    context.cell.machine.states.clear();
-                    break;
-                default:
-                    everythingIsFucked = true;
-                    context.debugger.EnterDebugger("Command called with invalid command!", context);
-                    return RESULT.BROKEN;
-                }
             }
             catch (TypedOperationException | FatalException e)
             {
                 everythingIsFucked = true;
                 context.fileOut.message("Game has ended with error: " + e.getLocalizedMessage());
+                return RESULT.BROKEN;
+            }
+            // Greens have only one action.
+            switch (cell.machine.next)
+            {
+            case "":
+                break;
+            case "Report":
+                context.cell.active = false;
+                context.cell.energy = 0;
+                context.cell.machine.states.clear();
+                break;
+            default:
+                everythingIsFucked = true;
+                context.fileOut.message("Command called with invalid command!");
                 return RESULT.BROKEN;
             }
         }
@@ -458,6 +233,288 @@ public final class World
             }
         }
         return RESULT.NONE;
+    }
+
+    private RESULT handleBlueMove(Cell cell)
+    {
+        RESULT result = RESULT.NONE;
+        int cost = 0;
+        boolean attemptMove = false;
+        int chellox = cell.x, chelloy = cell.y;
+        switch (cell.machine.next)
+        {
+        case "":
+            break;
+        case "Left":
+            if (cell.x > 0)
+            {
+                attemptMove = true;
+                --chellox;
+            }
+            break;
+        case "Right":
+            if (cell.x < x - 1)
+            {
+                attemptMove = true;
+                ++chellox;
+            }
+            break;
+        case "Up":
+            if (cell.y > 0)
+            {
+                attemptMove = true;
+                --chelloy;
+            }
+            break;
+        case "Down":
+            if (cell.y < y - 1)
+            {
+                attemptMove = true;
+                ++chelloy;
+            }
+            break;
+        case "Action":
+            cost = 1;
+            result = RESULT.WIN;
+            Cell top = cell.parent.getFirstNot(cell);
+            if (null != top)
+            {
+                // Grab it
+                if (Color.RED == top.color)
+                {
+                    --top.energy;
+                    if (0 == top.energy)
+                    {
+                        cell.parent.resources.remove(top);
+                    }
+                }
+                else if (Color.DARK_GRAY == top.color)
+                {
+                    cell.parent.resources.remove(top);
+                    // RULES: DARK GREY has a 1/4 chance of destroying a BLUE that interacts with it.
+                    if (top.draw_rand.getNext() < 0.25)
+                    {
+                        cell.active = false;
+                        cell.energy = -ENERGY;
+                    }
+                }
+                else if (Color.LIGHT_GRAY == top.color)
+                {
+                    cell.parent.resources.remove(top);
+                    // RULES: LIGHT GREY has a 1/5 chance of teleporting a BLUE to a random location.
+                    if (top.draw_rand.getNext() < 0.20)
+                    {
+                        int newx = (int)(top.draw_rand.getNext() * x);
+                        int newy = (int)(top.draw_rand.getNext() * y);
+                        cell.x = newx;
+                        cell.y = newy;
+                        Cell newParent = getCellAt(newx, newy);
+                        cell.parent.resources.remove(cell);
+                        cell.parent = newParent;
+                        newParent.addResource(cell);
+                    }
+                }
+                else
+                {
+                    if (null == cell.held)
+                    {
+                        if ((Color.BLUE != top.color) || (false == top.active))
+                        {
+                            cell.held = top;
+                            cell.parent.resources.remove(top);
+                        }
+                        else
+                        {
+                            cost = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Transform it
+                if (Color.BLACK == cell.parent.color)
+                {
+                    cell.parent.color = Color.GRAY;
+                    --blacks;
+                }
+                else if (Color.WHITE == cell.parent.color)
+                {
+                    cell.parent.color = Color.GRAY;
+                    --whites;
+                }
+                else
+                {
+                    if (cell.parent.draw_rand.getNext() < 0.5)
+                    {
+                        cell.parent.color = Color.BLACK;
+                        ++blacks;
+                    }
+                    else
+                    {
+                        cell.parent.color = Color.WHITE;
+                        ++whites;
+                    }
+                }
+            }
+            break;
+        case "Drop":
+            if (null != cell.held)
+            {
+                cell.held.x = cell.parent.x;
+                cell.held.y = cell.parent.y;
+                cell.parent.addResource(cell.held);
+                cell.held = null;
+                cost = 1;
+                result = RESULT.WIN;
+            }
+            break;
+        case "Report":
+            if ((true == cell.parent.resources.isEmpty()) || (Color.GREEN != cell.parent.resources.getFirst().color))
+            {
+                everythingIsFucked = true;
+                context.fileOut.message("BLUE tried to Report for Orders with no GREEN.");
+                return RESULT.BROKEN;
+            }
+            context.cell.active = false;
+            context.cell.energy = 0;
+            context.cell.machine.states.clear();
+            break;
+        default:
+            if (true == cell.machine.next.substring(0, 8).equals("Teleport"))
+            {
+                if (cell.machine.next.length() != 14)
+                {
+                    everythingIsFucked = true;
+                    context.fileOut.message("Invalid Teleport command received!");
+                    return RESULT.BROKEN;
+                }
+
+                int dx = ((cell.machine.next.charAt( 8) - 32) << 12) | ((cell.machine.next.charAt( 9) - 32) << 6) | (cell.machine.next.charAt(10) - 32);
+                int dy = ((cell.machine.next.charAt(11) - 32) << 12) | ((cell.machine.next.charAt(12) - 32) << 6) | (cell.machine.next.charAt(13) - 32);
+                Cell to = getCellAt(dx, dy);
+
+                boolean srcContains = false;
+                for (Cell res : cell.parent.resources)
+                {
+                    if (Color.YELLOW == res.color)
+                    {
+                        srcContains = true;
+                        break;
+                    }
+                }
+                boolean destContains = false;
+                if (null != to)
+                {
+                    for (Cell res : to.resources)
+                    {
+                        if (Color.YELLOW == res.color)
+                        {
+                            destContains = true;
+                            break;
+                        }
+                    }
+                }
+                if ((false == srcContains) || (false == destContains))
+                {
+                    everythingIsFucked = true;
+                    context.fileOut.message("Tried to teleport with no teleporter.");
+                    return RESULT.BROKEN;
+                }
+
+                cell.parent.resources.remove(context.cell);
+                cell.parent = to;
+                to.addResource(context.cell);
+                cell.x = to.x;
+                cell.y = to.y;
+
+                cost = 1;
+                result = RESULT.WIN;
+            }
+            else
+            {
+                everythingIsFucked = true;
+                context.fileOut.message("Command called with invalid command!");
+                return RESULT.BROKEN;
+            }
+        }
+
+        Cell newParent = null;
+        boolean succeededMove = false;
+        if (true == attemptMove)
+        {
+            newParent = getCellAt(chellox, chelloy);
+            if ((true == newParent.resources.isEmpty()) || (Color.MAGENTA != newParent.resources.getFirst().color))
+            {
+                succeededMove = true;
+            }
+            // RULES: Moving onto a MAGENTA while carrying a CYAN destroys the MAGENTA and CYAN.
+            else if ((null != cell.held) && (Color.CYAN == cell.held.color))
+            {
+                succeededMove = true;
+                cell.held = null; // It dead!
+                newParent.resources.clear(); // It dead, too!
+            }
+
+            if (true == succeededMove)
+            {
+                cell.x = chellox;
+                cell.y = chelloy;
+                result = RESULT.WIN;
+
+                // RULES: It costs 4 to move onto or off of a RED obstruction.
+                boolean actuallyRed = false;
+                for (Cell chello : cell.parent.resources)
+                {
+                    if (Color.RED == chello.color)
+                    {
+                        actuallyRed = true;
+                    }
+                }
+                for (Cell chello : newParent.resources)
+                {
+                    if (Color.RED == chello.color)
+                    {
+                        actuallyRed = true;
+                    }
+                }
+                if (true == actuallyRed)
+                {
+                    cost = 4;
+                }
+                else
+                {
+                    cost = 1;
+                }
+            }
+        }
+        if (0 != cost)
+        {
+            cell.energy -= cost;
+
+            if (true == succeededMove)
+            {
+                cell.parent.resources.remove(cell);
+                cell.parent = newParent;
+                newParent.addResource(cell);
+                // If succeededMove is true, newParent will not be null.
+                // If newParent IS null, then something VERY BAD has happened, and we want it to crash.
+
+                // RULES: Ending on a GREEN base replenishes a BLUE's energy.
+                Cell isGreen = newParent.resources.peek();
+                if ((null != isGreen) && (Color.GREEN == isGreen.color))
+                {
+                    cell.energy = ENERGY;
+                }
+            }
+
+            if (cell.energy <= 0)
+            {
+                cell.active = false;
+                cell.machine.states.clear();
+            }
+        }
+        return result;
     }
 
     public Color getAt(int ix, int iy)

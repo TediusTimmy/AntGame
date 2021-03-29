@@ -93,7 +93,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Rewind (string) # Returns one. Rewind the stack to a stack frame that begins with the named State. It is an error if no such State is found.
 * double Skip (string) # Returns one. Pop States from the current queue until the named State is found. It is an error if no such State is found.
 * double Task (string, value) # Give a free agent in the current location the starting named State with starting data. Return one if an agent was Tasked and zero if not.
-* vector Teleport (vector) # If BLUE is on a YELLOW, jump to the YELLOW nearest to the given location relative to the current one. Return where that location is relative to where you now are.
+* vector Teleport (vector) # If BLUE is on a YELLOW, jump to the YELLOW nearest to the given location relative to the current one. Return where that location is relative to where you now are. Note that Teleport is a Command, but this function gives useful information that would be hard to know otherwise.
 * double Transition (string) # Returns one. Removes the current State from the queue and replaces it with the named State.
 
 A visualization of the AI engine:  
