@@ -201,9 +201,9 @@ public final class World
             case "":
                 break;
             case "Report":
-                context.cell.active = false;
-                context.cell.energy = 0;
-                context.cell.machine.states.clear();
+                cell.active = false;
+                cell.energy = 0;
+                cell.machine.states.clear();
                 break;
             default:
                 everythingIsFucked = true;
@@ -376,9 +376,9 @@ public final class World
                 context.fileOut.message("BLUE tried to Report for Orders with no GREEN.");
                 return RESULT.BROKEN;
             }
-            context.cell.active = false;
-            context.cell.energy = 0;
-            context.cell.machine.states.clear();
+            cell.active = false;
+            cell.energy = 0;
+            cell.machine.states.clear();
             break;
         default:
             if (true == cell.machine.next.substring(0, 8).equals("Teleport"))
