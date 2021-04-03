@@ -28,7 +28,7 @@ import esl2.types.StringValue;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
-public class Inject extends StandardUnaryFunction
+public final class Inject extends StandardUnaryFunction
 {
 
     @Override

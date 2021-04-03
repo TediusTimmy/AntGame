@@ -68,10 +68,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "PRE BLUE" :
@@ -92,10 +88,6 @@
       end
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "POST BLUE" :
@@ -112,10 +104,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "BLUE DRONE" :
@@ -131,10 +119,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "GREEN" :
@@ -145,10 +129,6 @@
    function Update (arg) is
       call Task('PRE BLUE', arg)
       call Report()
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "
@@ -179,10 +159,6 @@
       end
       return arg
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Left" :
@@ -198,10 +174,6 @@
          call Leave()
          return ''
       end
-   end
-
-   function OnUpdate(arg) is
-      return arg
    end
  "
        },
@@ -219,10 +191,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Up" :
@@ -239,10 +207,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Down" :
@@ -258,10 +222,6 @@
          call Leave()
          return ''
       end
-   end
-
-   function OnUpdate(arg) is
-      return arg
    end
  "
        },
@@ -281,10 +241,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Drop" :
@@ -301,10 +257,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Do Nothing" :
@@ -313,10 +265,6 @@
          "Functions" :
  "
    function Update (arg) is
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "
@@ -328,10 +276,6 @@
  "
    function Update (arg) is
       call Report()
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "
@@ -346,21 +290,17 @@
       call Leave()
       return arg
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Make White" :
        {
-         "Data" : "beat",
+         "Data" : "",
          "Functions" :
  "
    function Update (arg) is
       set seen to Look(MakeVec(0, 0, 0))
       if 'BLUE' = seen then
-         if 0 = beat then
+         if 0 = Size(GetInfo()) then
             call Inform(1.0)
             return arg
          else
@@ -371,11 +311,6 @@
       else
          call Leave()
       end
-      return arg
-   end
-
-   function OnUpdate(arg) is
-      set beat to arg
       return arg
    end
  "

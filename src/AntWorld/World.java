@@ -505,7 +505,6 @@ public final class World
                             }
 
                             staat.update = getFunction("Update", 1, staat.name, table, env.executor);
-                            staat.onUpdate = getFunction("OnUpdate", 1, staat.name, table, env.executor);
                         }
 
                             break;

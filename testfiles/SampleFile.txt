@@ -75,10 +75,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "PRE BLUE" :
@@ -93,10 +89,6 @@
       call Enqueue('BLUE')
       call Leave()
       return ''
-   end
-
-   function OnUpdate(arg) is
-      return arg
    end
  "
        },
@@ -118,10 +110,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "BLUE DRONE GRAY" :
@@ -142,10 +130,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "GREEN" :
@@ -158,10 +142,6 @@
       (* We Report here because if we start activating drones now,
          then the blue collector will chase after them! *)
       call Report()
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "
@@ -184,10 +164,6 @@
       end
       return arg
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Left" :
@@ -203,10 +179,6 @@
          call Leave()
          return ''
       end
-   end
-
-   function OnUpdate(arg) is
-      return arg
    end
  "
        },
@@ -224,10 +196,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Up" :
@@ -244,10 +212,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Down" :
@@ -263,10 +227,6 @@
          call Leave()
          return ''
       end
-   end
-
-   function OnUpdate(arg) is
-      return arg
    end
  "
        },
@@ -286,10 +246,6 @@
       call Leave()
       return ''
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Drop" :
@@ -306,10 +262,6 @@
          return ''
       end
    end
-
-   function OnUpdate(arg) is
-      return arg
-   end
  "
        },
       "Do Nothing" :
@@ -318,10 +270,6 @@
          "Functions" :
  "
    function Update (arg) is
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "
@@ -338,10 +286,6 @@
       else
          call Leave()
       end
-      return arg
-   end
-
-   function OnUpdate(arg) is
       return arg
    end
  "

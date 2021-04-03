@@ -32,28 +32,40 @@ public final class StateMachine
     public final LinkedList<LinkedList<State>> states;
     public ValueType last;
     public Command next;
+    public ValueType reports;
 
     public StateMachine()
     {
         states = new LinkedList<LinkedList<State>>();
         last = ConstantsSingleton.getInstance().EMPTY_DICTIONARY;
+        reports = ConstantsSingleton.getInstance().EMPTY_ARRAY;
     }
 
     public boolean update(CallingContext context) throws FatalException, TypedOperationException
     {
         State currentState = null;
+        next = null;
         do
         {
             // State to process is the front of the list (queue) of the top of the stack.
             currentState = states.getLast().getFirst();
             last = currentState.update(context, last);
-            next = currentState.next;
         }
         // If the current active state has changed, run its update function NOW.
         // The idea here is to support dispatch states: a state which enqueues an activity to run,
         // so that the activity has a stable name, even if its components are not.
         while ((false == states.isEmpty()) && (currentState != states.getLast().getFirst()));
+        reports = ConstantsSingleton.getInstance().EMPTY_ARRAY;
         return false == states.isEmpty();
+    }
+
+    public void setCommand(Command newCommand) throws TypedOperationException
+    {
+        if (null != next)
+        {
+            throw new TypedOperationException("Tried to perform two commands in one move.");
+        }
+        next = newCommand;
     }
 
 }

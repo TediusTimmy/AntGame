@@ -25,6 +25,7 @@ import StateEngine.StdLib.FindAll;
 import StateEngine.StdLib.FindNearest;
 import StateEngine.StdLib.Follow;
 import StateEngine.StdLib.FreeAgents;
+import StateEngine.StdLib.GetInfo;
 import StateEngine.StdLib.Grab;
 import StateEngine.StdLib.Info;
 import StateEngine.StdLib.Inform;
@@ -84,6 +85,7 @@ public class ExecutorBuilder extends esl2.parser.ExecutorBuilder
         addFunction("Drop", new Drop(), 0, executor, funs, frameInfo);
         addFunction("Grab", new Grab(), 0, executor, funs, frameInfo);
         addFunction("Transform", new Transform(), 0, executor, funs, frameInfo);
+        addFunction("GetInfo", new GetInfo(), 0, executor, funs, frameInfo);
 
         addFunction("Transition", new Transition(), 1, executor, funs, frameInfo);
         addFunction("Push", new Push(), 1, executor, funs, frameInfo);

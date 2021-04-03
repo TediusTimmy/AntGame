@@ -17,26 +17,16 @@
 
 package StateEngine.StdLib;
 
-import java.awt.Color;
-
 import StateEngine.CtrlCCtrlV.CallingContext;
-import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
-import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
-public final class Grab extends StandardConstantFunction
+public final class GetInfo extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context)
     {
-        if (Color.GREEN == context.cell.color)
-        {
-            throw new TypedOperationException("GREEN tried to Grab.");
-        }
-        context.cell.machine.setCommand(new StateEngine.Commands.Grab());
-        return ConstantsSingleton.getInstance().DOUBLE_ONE;
+        return context.cell.machine.reports;
     }
 
 }

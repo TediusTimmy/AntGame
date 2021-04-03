@@ -62,7 +62,7 @@ public final class Teleport extends StandardUnaryFunction
             LinkedList<Cell> nearest = FindNearest.findNearest(context.world, destx, desty, Color.YELLOW, Integer.MAX_VALUE, true);
             // The search is a global search, so it should never return empty: it just may return the portal that you're on.
             Cell to = nearest.getFirst();
-            context.top().setCommand(new StateEngine.Commands.Teleport(to));
+            context.cell.machine.setCommand(new StateEngine.Commands.Teleport(to));
             return new VectorValue(new Vector(destx - to.x, to.y - desty, 0.0));
         }
         else

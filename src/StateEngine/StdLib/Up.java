@@ -35,7 +35,7 @@ public final class Up extends StandardConstantFunction
         {
             throw new TypedOperationException("GREEN tried to Move.");
         }
-        context.top().setCommand(new StateEngine.Commands.Up());
+        context.cell.machine.setCommand(new StateEngine.Commands.Up());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

@@ -35,7 +35,7 @@ public final class Transform extends StandardConstantFunction
         {
             throw new TypedOperationException("GREEN tried to Transform.");
         }
-        context.top().setCommand(new StateEngine.Commands.Transform());
+        context.cell.machine.setCommand(new StateEngine.Commands.Transform());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

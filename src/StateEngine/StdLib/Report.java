@@ -35,7 +35,7 @@ public final class Report extends StandardConstantFunction
         {
             throw new TypedOperationException("BLUE tried to Report for Orders with no GREEN.");
         }
-        context.top().setCommand(new StateEngine.Commands.Report());
+        context.cell.machine.setCommand(new StateEngine.Commands.Report());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

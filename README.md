@@ -54,7 +54,6 @@ This JSON object has three properties:
   * "Data" - A string of space-delimited variable names for variables that will be persisted across calls within that State. All variables are initialized to zero.
   * "Functions" - A string of functions that are used within this State alone. This group of functions must define two functions:
     * "Update" - This function is called every step of the simulation to update the internal state of the State, now that it can do something different. This function takes one argument, and that value is used to communicate between States. Most of the time, the argument to this function is what it returned in the previous call. If this State Leaves, then the return value is the argument to the next State's Update function.
-    * "OnUpdate" - This function is called whenever this state is Informed of something. It takes one argument: the thing it is being informed of. The return value is returned to the Informant.
 
 # The Language
 I just decided to use ESL2, which is also located on this GitHub somewhere. There are some changes and additions, described below.
@@ -80,8 +79,9 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Follow (array) # Returns one. Argument should be an array of string. "Queues" up the named States to follow the current State in their array order.
 * double Follow (string) # Returns one. "Queues" up the named State to follow the current State.
 * double FreeAgents () # Returns the count of BLUEs or GREENs on the current location that can be Tasked. GREENs get a BLUE count and vice-versa.
+* array GetInfo () # Returns an array of everything the cell has been Informed about since the last update.
 * double Grab () # Returns one. Schedule a Grab command.
-* array Inform (value) # Passes a piece of data to every active thing in the current location. This calls OnUpdate on the informed things, passing in the data. Returns an array of returned values from OnUpdate.
+* array Inform (value) # Returns one. Passes a piece of data to every active thing in the current location. Inform is a command.
 * double Inject (array) # Returns one. Argument should be an array of string. Insert a new queue as the second on the stack and add these States to it in their array order.
 * double Inject (string) # Returns one. Insert a new queue as the second on the stack and add this State to it.
 * string Inventory () # Returns the color of the currently held item, or an empty string. GREEN always gets empty string.
@@ -152,6 +152,6 @@ The debugger is a simple translation to the debug console of a console debugger.
 That's it! This should suffice for most rudimentary debugging of program errors.
 
 ## Commands vs Library Functions
-What is the point between this strange distinction between Commands and other things that happen in the Standard Library. In general, Commands are things that interface with the external world. The Standard Library changes the internal world of the AI. Only Inform and Task break this, as the current Command implementation doesn't have an real means to pass information out. If I refactor the manner of handling Commands, and I REALLY need to refactor it, then Inform and Task may become commands themselves. They'll likely remain commands with a function covering up the implementation.
+What is the point between this strange distinction between Commands and other things that happen in the Standard Library. In general, Commands are things that interface with the external world. The Standard Library changes the internal world of the AI. Only Task breaks this, and it may be converted to a command in the near future.
 
 In normal AI tasks, the AI commands something (a fin to cant, the engine to gimbal) and then it has to wait, enter a new update cycle, and evaluate the results of what was commanded before. Sometimes there's mechanical failure, or a physical limitation has been reached, or ... everything happened correctly. At this point, though, the AI needs to reevaluate the goal and how it intends to achieve that goal, and make a new command. That's what I'm trying to emulate here. Commands are meant to emulate those things that need real time to actually happen in the real world. And, Report does meet that distinction, even if it seems like a cheap cop-out by me to make sure that Report doesn't occur in tandem with a move.

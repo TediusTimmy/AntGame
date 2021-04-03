@@ -35,7 +35,7 @@ public final class Down extends StandardConstantFunction
         {
             throw new TypedOperationException("GREEN tried to Move.");
         }
-        context.top().setCommand(new StateEngine.Commands.Down());
+        context.cell.machine.setCommand(new StateEngine.Commands.Down());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

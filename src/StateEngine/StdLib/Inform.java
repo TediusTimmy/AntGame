@@ -17,11 +17,8 @@
 
 package StateEngine.StdLib;
 
-import java.util.ArrayList;
-
-import AntWorld.Cell;
 import StateEngine.CtrlCCtrlV.CallingContext;
-import esl2.types.ArrayValue;
+import esl2.engine.ConstantsSingleton;
 import esl2.types.FatalException;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
@@ -32,15 +29,8 @@ public final class Inform extends StandardUnaryFunction
     @Override
     public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException, FatalException
     {
-        ArrayList<ValueType> result = new ArrayList<ValueType>();
-        for (Cell cell : context.cell.parent.resources)
-        {
-            if (true == cell.active)
-            {
-                result.add(cell.machine.states.getLast().getFirst().onUpdate.execute(context, arg));
-            }
-        }
-        return new ArrayValue(result);
+        context.cell.machine.setCommand(new StateEngine.Commands.Inform(arg));
+        return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 
 }

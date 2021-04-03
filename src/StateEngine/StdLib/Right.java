@@ -35,7 +35,7 @@ public final class Right extends StandardConstantFunction
         {
             throw new TypedOperationException("GREEN tried to Move.");
         }
-        context.top().setCommand(new StateEngine.Commands.Right());
+        context.cell.machine.setCommand(new StateEngine.Commands.Right());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 
