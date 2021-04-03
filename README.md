@@ -24,7 +24,7 @@ The AI is limited by what it can "see". In order to make plans about places it c
 * DARK GRAY - This is a dangerous nuisance. This has a one in four chance of destroying the BLUE when interacted with ('Action' Command at that location). About 1 in 20 resources will be DARK GRAY. You should always have more BLUEs than will be destroyed.
 
 ## Goal
-The overall "goal" of the game is to turn all of the locations to either BLACK or WHITE. All of them BLACK, or all of them WHITE. When `call Command('Action')` is performed on a location with no resources, it transforms the location. BLACK and WHITE both transform to GRAY. GRAY will transform to BLACK or WHITE, with 50% probability. When all are BLACK or all are WHITE, you win.  
+The overall "goal" of the game is to turn all of the locations to either BLACK or WHITE. All of them BLACK, or all of them WHITE. When `call Transform()` is performed on a location with no resources, it transforms the location. BLACK and WHITE both transform to GRAY. GRAY will transform to BLACK or WHITE, with 50% probability. When all are BLACK or all are WHITE, you win.  
 One loses by failing to make a move for a hundred turns. If a BLUE hasn't moved, picked up something, or dropped something in a hundred turns, then the AI that you programmed probably isn't working towards its goal any more, and that is a losing position.
 
 # Superdeterminism
@@ -52,7 +52,7 @@ This JSON object has three properties:
 * "Global Functions" - A string of functions that are available to all States to use.
 * "States" - A JSON object, where each property is the name of a State that can be utilized by the player. Each State is, in and of itself, also a JSON object.
   * "Data" - A string of space-delimited variable names for variables that will be persisted across calls within that State. All variables are initialized to zero.
-  * "Functions" - A string of functions that are used within this State alone. This group of functions must define two functions:
+  * "Functions" - A string of functions that are used within this State alone. This group of functions must define one function:
     * "Update" - This function is called every step of the simulation to update the internal state of the State, now that it can do something different. This function takes one argument, and that value is used to communicate between States. Most of the time, the argument to this function is what it returned in the previous call. If this State Leaves, then the return value is the argument to the next State's Update function.
 
 # The Language
