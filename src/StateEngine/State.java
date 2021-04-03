@@ -19,6 +19,7 @@ package StateEngine;
 
 import java.util.ArrayList;
 
+import StateEngine.Commands.Command;
 import StateEngine.CtrlCCtrlV.CallWrapper;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.types.FatalException;
@@ -32,7 +33,7 @@ public final class State
     public final ArrayList<ValueType> data;
     public CallWrapper update;
     public CallWrapper onUpdate;
-    public String next;
+    public Command next;
 
     public State()
     {
@@ -51,7 +52,7 @@ public final class State
     {
         try
         {
-            next = "";
+            next = null;
             context.pushState(this);
             return update.execute(context, arg);
         }
@@ -59,6 +60,15 @@ public final class State
         {
             context.popState();
         }
+    }
+
+    public void setCommand(Command newCommand) throws TypedOperationException
+    {
+        if (null != next)
+        {
+            throw new TypedOperationException("Tried to perform two commands in one move.");
+        }
+        next = newCommand;
     }
 
 }

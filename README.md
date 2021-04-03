@@ -69,8 +69,9 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 
 ## Standard Library Additions
 * double Abandon () # Pops the current State queue from the stack. Abandons the current stack frame.
-* string Command (string) # Gives a command. Commands are explained below. Returns the command. GREEN can only give 'Report' commands.
 * double CurrentEnergy () # Returns the current amount of energy a BLUE has. Is an error for a GREEN to call this.
+* double Down () # Returns one. Schedule a Down command.
+* double Drop () # Returns one. Schedule a Drop command.
 * double Enqueue (array) # Returns one. Argument should be an array of string. Performs the string version of the function over the array.
 * double Enqueue (string) # Returns one. Argument should be a State name. Queues up the named State to run later by placing it at the end of the queue, where it belongs.
 * double EnterDebugger () # Returns zero. Function described below.
@@ -79,22 +80,28 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Follow (array) # Returns one. Argument should be an array of string. "Queues" up the named States to follow the current State in their array order.
 * double Follow (string) # Returns one. "Queues" up the named State to follow the current State.
 * double FreeAgents () # Returns the count of BLUEs or GREENs on the current location that can be Tasked. GREENs get a BLUE count and vice-versa.
+* double Grab () # Returns one. Schedule a Grab command.
 * array Inform (value) # Passes a piece of data to every active thing in the current location. This calls OnUpdate on the informed things, passing in the data. Returns an array of returned values from OnUpdate.
 * double Inject (array) # Returns one. Argument should be an array of string. Insert a new queue as the second on the stack and add these States to it in their array order.
 * double Inject (string) # Returns one. Insert a new queue as the second on the stack and add this State to it.
 * string Inventory () # Returns the color of the currently held item, or an empty string. GREEN always gets empty string.
 * double Leave () # Removes the current State from the State queue. If the queue is now empty, pops the queue from the stack. If the stack is empty, this is an error.
+* double Left () # Returns one. Schedule a Left command.
 * double Look (vector) # Report the top-most thing that can be "seen" at the given location relative to this. BLUEs and GREENs don't see themselves. The value "ORANGE" is beyond the edge of the universe. The value "PINK" is beyond what is visible. GREEN is always seen first, then BLUE, then everything else in the reverse order they were moved onto the location.
 * double Precede (array) # Returns one. Argument should be an array of string. Add the named States to the queue before the current State in their array order.
 * double Precede (string) # Returns one. Add the named State to the queue before the current State.
 * double Push (array) # Returns one. Argument should be an array of string. Push a new queue to the top of the stack and add these States to it in their array order.
 * double Push (string) # Returns one. Push a new queue to the top of the stack and add this State to it.
 * double Rand () # Returns the next random number from the cell's personal random number generator.
+* double Report () # Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN. Report is a command.
 * double Rewind (string) # Returns one. Rewind the stack to a stack frame that begins with the named State. It is an error if no such State is found.
+* double Right () # Returns one. Schedule a Right command.
 * double Skip (string) # Returns one. Pop States from the current queue until the named State is found. It is an error if no such State is found.
 * double Task (string, value) # Give a free agent in the current location the starting named State with starting data. Return one if an agent was Tasked and zero if not.
-* vector Teleport (vector) # If BLUE is on a YELLOW, jump to the YELLOW nearest to the given location relative to the current one. Return where that location is relative to where you now are. Note that Teleport is a Command, but this function gives useful information that would be hard to know otherwise.
+* vector Teleport (vector) # If BLUE is on a YELLOW, jump to the YELLOW nearest to the given location relative to the current one. Return where that location is relative to where you now are. Teleport is a Command.
+* double Transform () # Returns one. Schedule a Transform command.
 * double Transition (string) # Returns one. Removes the current State from the queue and replaces it with the named State.
+* double Up () # Returns one. Schedule an Up command.
 
 A visualization of the AI engine:  
 ```
@@ -120,12 +127,17 @@ All commands, except Report, expend energy to perform. It takes four energy to m
   * Moving onto a MAGENTA while carrying a CYAN destroys the MAGENTA and CYAN. The move succeeds.
   * It costs energy to attempt a move that cannot be performed, whether trying to move onto MAGENTA or out of bounds.
   * A BLUE has to successfully move to reset the lose counter.
-* Action - Firstly, if colocated with something that can be picked up, pick it up (NOTE: you cannot pick up an active BLUE and trying to do so will not do anything and take no energy). If on a GRAY, it changes to BLACK or WHITE with 50% probability. If on a BLACK or WHITE, it changes to a GRAY.
-  * A BLUE has to interact with a RED four times to remove it. It is a nuisance.
-  * Interacting with a LIGHT GRAY will teleport the BLUE to a random location one in five times. These are unpredictable.
-  * Interacting with a DARK GRAY will destroy the BLUE one in four times. These are dangerous.
+* Grab - If colocated with something that can be picked up, pick it up. If not, this is an error.
+  * Grabbing a LIGHT GRAY will teleport the BLUE to a random location one in five times. These are unpredictable.
+  * Grabbing a DARK GRAY will destroy the BLUE one in four times. These are dangerous.
+  * You cannot pick up an active BLUE or GREEN and trying to do so will not do anything and take no energy.
+* Transform
+  * A BLUE has to transform a RED four times to remove it. It is a nuisance.
+  * If on a BLACK or WHITE, it changes to a GRAY.
+  * If on a GRAY, it changes to BLACK or WHITE with 50% probability.
+  * It is an error to transform with something else obstructing the transformation.
 * Drop - If something is held, drop it. If not holding anything, no energy is used and the turn is wasted.
-* Report - Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN.
+* Report - Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN. This is the only command a GREEN can perform.
 
 ### The Debugger
 The debugger is a simple translation to the debug console of a console debugger. It is very primitive. One enters commands to the debugger in the input box, and sends them to the debugger with by either pressing enter, or by clicking on the button. At any time, you can type "help" and it will tell you that it doesn't understand what "help" is and then list what it does understand.

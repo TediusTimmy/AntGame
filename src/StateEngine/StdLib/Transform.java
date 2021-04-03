@@ -17,26 +17,26 @@
 
 package StateEngine.StdLib;
 
+import java.awt.Color;
+
 import StateEngine.CtrlCCtrlV.CallingContext;
-import esl2.types.StringValue;
+import esl2.engine.ConstantsSingleton;
+import esl2.types.FatalException;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
-public final class Command extends StandardUnaryFunction
+public final class Transform extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
+    public ValueType fun(CallingContext context) throws TypedOperationException, FatalException
     {
-        if (arg instanceof StringValue)
+        if (Color.GREEN == context.cell.color)
         {
-            context.top().next = ((StringValue)arg).value;
+            throw new TypedOperationException("GREEN tried to Transform.");
         }
-        else
-        {
-            throw new TypedOperationException("Error Command with non-String command.");
-        }
-        return arg;
+        context.top().setCommand(new StateEngine.Commands.Transform());
+        return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 
 }

@@ -19,6 +19,7 @@ package StateEngine;
 
 import java.util.LinkedList;
 
+import StateEngine.Commands.Command;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
 import esl2.types.FatalException;
@@ -30,7 +31,7 @@ public final class StateMachine
 
     public final LinkedList<LinkedList<State>> states;
     public ValueType last;
-    public String next;
+    public Command next;
 
     public StateMachine()
     {

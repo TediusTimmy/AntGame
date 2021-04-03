@@ -157,7 +157,7 @@
       call Task('PRE BLUE', arg)
       (* We Report here because if we start activating drones now,
          then the blue collector will chase after them! *)
-      call Command('Report')
+      call Report()
       return arg
    end
 
@@ -179,7 +179,7 @@
          else
             call Task('BLUE DRONE GRAY', arg)
             (* If there is more than one active drone, then they will conflict with one another *)
-            call Command('Report')
+            call Report()
          end
       end
       return arg
@@ -197,7 +197,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Left')
+         call Left()
          return 'Left'
       else
          call Leave()
@@ -217,7 +217,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Right')
+         call Right()
          return 'Right'
       else
          call Leave()
@@ -237,7 +237,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Up')
+         call Up()
          return 'Up'
       else
          call Leave()
@@ -257,7 +257,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Down')
+         call Down()
          return 'Down'
       else
          call Leave()
@@ -279,7 +279,7 @@
       if '' = arg then
          set seen to Look(MakeVec(0, 0, 0))
          if !(('WHITE' = seen) | ('BLACK' = seen) | ('GRAY' = seen)) then
-            call Command('Action')
+            call Grab()
             return 'Action'
          end
       end
@@ -299,7 +299,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Drop')
+         call Drop()
          return 'Drop'
       else
          call Leave()
@@ -333,10 +333,8 @@
  "
    function Update (arg) is
       set seen to Look(MakeVec(0, 0, 0))
-      if 'BLUE' = seen then
-         call Leave()
-      elseif 'WHITE' <> seen then
-         call Command('Action')
+      if ('BLACK' = seen) | ('GRAY' = seen) then
+         call Transform()
       else
          call Leave()
       end

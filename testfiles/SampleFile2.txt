@@ -81,7 +81,7 @@
  "
    function Update (arg) is
       if 0 = FreeAgents() then
-         call Command('Report')
+         call Report()
       else
          call Enqueue('Grab')
          call Enqueue('Make White')
@@ -144,7 +144,7 @@
  "
    function Update (arg) is
       call Task('PRE BLUE', arg)
-      call Command('Report')
+      call Report()
       return arg
    end
 
@@ -167,7 +167,7 @@
             set temp to PopFront(temp)
          end
          if 0 = Size(tasks) then
-            call Command('Report')
+            call Report()
          end
       end
       while 0 <> FreeAgents() & 0 <> Size(tasks) do
@@ -192,7 +192,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Left')
+         call Left()
          return 'Left'
       else
          call Leave()
@@ -212,7 +212,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Right')
+         call Right()
          return 'Right'
       else
          call Leave()
@@ -232,7 +232,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Up')
+         call Up()
          return 'Up'
       else
          call Leave()
@@ -252,7 +252,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Down')
+         call Down()
          return 'Down'
       else
          call Leave()
@@ -274,8 +274,8 @@
       if '' = arg then
          set seen to Look(MakeVec(0, 0, 0))
          if !(('WHITE' = seen) | ('BLACK' = seen) | ('GRAY' = seen)) then
-            call Command('Action')
-            return 'Action'
+            call Grab()
+            return 'Grab'
          end
       end
       call Leave()
@@ -294,7 +294,7 @@
  "
    function Update (arg) is
       if '' = arg then
-         call Command('Drop')
+         call Drop()
          return 'Drop'
       else
          call Leave()
@@ -327,7 +327,7 @@
          "Functions" :
  "
    function Update (arg) is
-      call Command('Report')
+      call Report()
       return arg
    end
 
@@ -366,8 +366,8 @@
          else
             call Leave()
          end
-      elseif 'WHITE' <> seen then
-         call Command('Action')
+      elseif ('BLACK' = seen) | ('GRAY' = seen) then
+         call Transform()
       else
          call Leave()
       end

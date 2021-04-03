@@ -33,6 +33,23 @@ public final class Teleport extends StandardUnaryFunction
     @Override
     public ValueType fun(CallingContext context, ValueType arg) throws TypedOperationException
     {
+        if (Color.GREEN == context.cell.color)
+        {
+            throw new TypedOperationException("GREEN tried to Teleport.");
+        }
+        boolean contains = false;
+        for (Cell cell : context.cell.parent.resources)
+        {
+            if (Color.YELLOW == cell.color)
+            {
+                contains = true;
+                break;
+            }
+        }
+        if (false == contains)
+        {
+            throw new TypedOperationException("Tried to teleport with no teleporter.");
+        }
         if (arg instanceof VectorValue)
         {
             Vector value = ((VectorValue)arg).value;
@@ -45,11 +62,7 @@ public final class Teleport extends StandardUnaryFunction
             LinkedList<Cell> nearest = FindNearest.findNearest(context.world, destx, desty, Color.YELLOW, Integer.MAX_VALUE, true);
             // The search is a global search, so it should never return empty: it just may return the portal that you're on.
             Cell to = nearest.getFirst();
-            int dx = to.x;
-            int dy = to.y;
-            context.top().next = "Teleport" +
-                (char)((dx >> 12) + 32) + (char)(((dx >> 6) & 0x3F) + 32) + (char)((dx & 0x3F) + 32) +
-                (char)((dy >> 12) + 32) + (char)(((dy >> 6) & 0x3F) + 32) + (char)((dy & 0x3F) + 32);
+            context.top().setCommand(new StateEngine.Commands.Teleport(to));
             return new VectorValue(new Vector(destx - to.x, to.y - desty, 0.0));
         }
         else
