@@ -17,28 +17,37 @@
 
 package StateEngine.Commands;
 
-import java.awt.Color;
+import java.util.LinkedList;
 
 import AntWorld.Cell;
 import AntWorld.World;
+import StateEngine.State;
+import esl2.types.ValueType;
 
-public abstract class Command
+public final class Task extends Command
 {
 
-    public abstract boolean act(Cell cell, World world) throws CommandFailed;
+    private Cell victim;
+    private State state;
+    private ValueType orders;
 
-    protected static void handleCost(Cell cell, int cost)
+    public Task(Cell toTask, State state, ValueType orders)
     {
-        if (Color.BLUE == cell.color)
-        {
-            cell.energy -= cost;
-    
-            if (cell.energy <= 0)
-            {
-                cell.active = false;
-                cell.machine.states.clear();
-            }
-        }
+        victim = toTask;
+        this.state = state;
+        this.orders = orders;
+    }
+
+    @Override
+    public boolean act(Cell cell, World world) throws CommandFailed
+    {
+        victim.active = true;
+        victim.energy = world.ENERGY;
+        victim.machine.states.add(new LinkedList<State>());
+        victim.machine.states.getFirst().add(new State(state));
+        victim.machine.last = orders;
+        handleCost(cell, 1);
+        return true;
     }
 
 }

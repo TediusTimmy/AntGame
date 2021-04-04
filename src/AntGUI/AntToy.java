@@ -71,6 +71,7 @@ public final class AntToy
     private JTextArea debugConsole;
     private AtomicLong GoMifune;
     private long turns;
+    private File lastDirectory;
 
     public final class Logger extends ParserLogger
     {
@@ -95,11 +96,16 @@ public final class AntToy
         menuBar.add(menu);
         JMenuItem load = new JMenuItem("Load");
         menu.add(load);
+        lastDirectory = null;
         load.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
                 JFileChooser filePicker = new JFileChooser();
+                if (null != lastDirectory)
+                {
+                    filePicker.setCurrentDirectory(lastDirectory);
+                }
                 debugConsole.setText("");
                 EnterDebugger.queue.clear();
                 if (JFileChooser.APPROVE_OPTION == filePicker.showOpenDialog(frame))
@@ -107,6 +113,7 @@ public final class AntToy
                     File selectedFile = filePicker.getSelectedFile();
                     if (null != selectedFile)
                     {
+                        lastDirectory = filePicker.getCurrentDirectory();
                         if (false == viewer.loadFile(selectedFile.getAbsolutePath(), logger))
                         {
                             JOptionPane.showMessageDialog(frame, "Load Failed!");

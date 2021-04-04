@@ -97,7 +97,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Rewind (string) # Returns one. Rewind the stack to a stack frame that begins with the named State. It is an error if no such State is found.
 * double Right () # Returns one. Schedule a Right command.
 * double Skip (string) # Returns one. Pop States from the current queue until the named State is found. It is an error if no such State is found.
-* double Task (string, value) # Give a free agent in the current location the starting named State with starting data. Return one if an agent was Tasked and zero if not.
+* double Task (string, value) # Give a free agent in the current location the starting named State with starting data. Return one if an agent was Tasked and zero if not. Task is a command.
 * vector Teleport (vector) # If BLUE is on a YELLOW, jump to the YELLOW nearest to the given location relative to the current one. Return where that location is relative to where you now are. Teleport is a Command.
 * double Transform () # Returns one. Schedule a Transform command.
 * double Transition (string) # Returns one. Removes the current State from the queue and replaces it with the named State.
@@ -137,7 +137,7 @@ All commands, except Report, expend energy to perform. It takes four energy to m
   * If on a GRAY, it changes to BLACK or WHITE with 50% probability.
   * It is an error to transform with something else obstructing the transformation.
 * Drop - If something is held, drop it. If not holding anything, no energy is used and the turn is wasted.
-* Report - Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN. This is the only command a GREEN can perform.
+* Report - Report for Duty/Orders. The cell is deactivated and becomes a free agent. This is an error for a BLUE to report not on a GREEN.
 
 ### The Debugger
 The debugger is a simple translation to the debug console of a console debugger. It is very primitive. One enters commands to the debugger in the input box, and sends them to the debugger with by either pressing enter, or by clicking on the button. At any time, you can type "help" and it will tell you that it doesn't understand what "help" is and then list what it does understand.
@@ -152,6 +152,6 @@ The debugger is a simple translation to the debug console of a console debugger.
 That's it! This should suffice for most rudimentary debugging of program errors.
 
 ## Commands vs Library Functions
-What is the point between this strange distinction between Commands and other things that happen in the Standard Library. In general, Commands are things that interface with the external world. The Standard Library changes the internal world of the AI. Only Task breaks this, and it may be converted to a command in the near future.
+What is the point between this strange distinction between Commands and other things that happen in the Standard Library. In general, Commands are things that interface with the external world. The Standard Library changes the internal world of the AI.
 
 In normal AI tasks, the AI commands something (a fin to cant, the engine to gimbal) and then it has to wait, enter a new update cycle, and evaluate the results of what was commanded before. Sometimes there's mechanical failure, or a physical limitation has been reached, or ... everything happened correctly. At this point, though, the AI needs to reevaluate the goal and how it intends to achieve that goal, and make a new command. That's what I'm trying to emulate here. Commands are meant to emulate those things that need real time to actually happen in the real world. And, Report does meet that distinction, even if it seems like a cheap cop-out by me to make sure that Report doesn't occur in tandem with a move.

@@ -111,20 +111,21 @@ public final class World
         {
             int fx = (int)(give.getNext() * x);
             int fy = (int)(give.getNext() * y);
-            if (true == w[fy][fx].resources.isEmpty())
+            Cell parent = getCellAt(fx, fy);
+            if (true == parent.resources.isEmpty())
             {
                 Cell temp = new Cell(this, new Rand48(rand.getNext()), fx, fy);
                 temp.color = Color.GREEN;
                 temp.prior = 1;
-                temp.parent = w[fy][fx];
+                temp.parent = parent;
                 greens.add(temp);
-                w[fy][fx].addResource(temp);
+                parent.addResource(temp);
                 temp = new Cell(this, new Rand48(rand.getNext()), fx, fy);
                 temp.color = Color.BLUE;
                 temp.prior = 2;
-                temp.parent = w[fy][fx];
+                temp.parent = parent;
                 blues.add(temp);
-                w[fy][fx].addResource(temp);
+                parent.addResource(temp);
             }
         }
 

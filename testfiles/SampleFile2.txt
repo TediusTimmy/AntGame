@@ -76,9 +76,13 @@
          "Functions" :
  "
    function Update (arg) is
+      if IsDictionary(arg) then
+         return ''
+      end
       if 0 = FreeAgents() then
          call Report()
       else
+         call Enqueue('Wait')
          call Enqueue('Grab')
          call Enqueue('Make White')
          call Enqueue('Drop')
@@ -127,8 +131,12 @@
          "Functions" :
  "
    function Update (arg) is
-      call Task('PRE BLUE', arg)
-      call Report()
+      if IsDictionary(arg) then
+         call Task('PRE BLUE', arg)
+         return ''
+      else
+         call Report()
+      end
       return arg
    end
  "
@@ -150,7 +158,7 @@
             call Report()
          end
       end
-      while 0 <> FreeAgents() & 0 <> Size(tasks) do
+      if 0 <> FreeAgents() & 0 <> Size(tasks) then
          call Task('BLUE DRONE', tasks[0])
          set tasks to PopFront(tasks)
       end
@@ -269,6 +277,20 @@
    end
  "
        },
+      "Wait" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         return 'Wait'
+      end
+      call Leave()
+      return ''
+   end
+ "
+       },
       "Report" :
        {
          "Data" : "",
@@ -286,7 +308,10 @@
          "Functions" :
  "
    function Update (arg) is
-      call Task('GREEN DRONE', arg)
+      if '' = arg then
+         call Task('GREEN DRONE', arg)
+         return 'Task'
+      end
       call Leave()
       return arg
    end

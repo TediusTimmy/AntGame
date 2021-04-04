@@ -18,7 +18,6 @@
 package StateEngine.StdLib;
 
 import java.awt.Color;
-import java.util.LinkedList;
 
 import AntWorld.Cell;
 import StateEngine.State;
@@ -74,11 +73,7 @@ public final class Task extends Statement
         {
             return ConstantsSingleton.getInstance().DOUBLE_ZERO;
         }
-        blue.active = true;
-        blue.energy = context.world.ENERGY;
-        blue.machine.states.add(new LinkedList<State>());
-        blue.machine.states.getFirst().add(new State(state));
-        blue.machine.last = arg2;
+        context.cell.machine.setCommand(new StateEngine.Commands.Task(blue, state, arg2));
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

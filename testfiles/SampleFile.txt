@@ -66,6 +66,7 @@
          call Enqueue('BLUE')
       else
          call Task('GREEN DRONE', arg)
+         call Enqueue('Wait')
          set nears to FindNearest('GREEN')
          if 0 <> Size(nears) then
             call GOTO(nears[0])
@@ -83,6 +84,7 @@
          "Functions" :
  "
    function Update (arg) is
+      call Enqueue('Wait')
       call Enqueue('Grab')
       call Enqueue('Make White')
       call Enqueue('Drop')
@@ -138,10 +140,14 @@
          "Functions" :
  "
    function Update (arg) is
-      call Task('PRE BLUE', arg)
-      (* We Report here because if we start activating drones now,
-         then the blue collector will chase after them! *)
-      call Report()
+      if IsDictionary(arg) then
+         call Task('PRE BLUE', arg)
+         return ''
+      else
+         (* We Report here because if we start activating drones now,
+            then the blue collector will chase after them! *)
+         call Report()
+      end
       return arg
    end
  "
@@ -156,8 +162,10 @@
          if 0 = one then
             call Task('BLUE DRONE', arg)
             set one to 1
-         else
+         elseif 1 = one then
             call Task('BLUE DRONE GRAY', arg)
+            set one to 2
+         else
             (* If there is more than one active drone, then they will conflict with one another *)
             call Report()
          end
@@ -271,6 +279,20 @@
  "
    function Update (arg) is
       return arg
+   end
+ "
+       },
+      "Wait" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         return 'Wait'
+      end
+      call Leave()
+      return ''
    end
  "
        },
