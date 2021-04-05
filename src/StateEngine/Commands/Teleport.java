@@ -38,7 +38,7 @@ public final class Teleport extends Command
         to.addResource(cell);
         cell.x = to.x;
         cell.y = to.y;
-        handleCost(cell, 1);
+        handleCost(cell, world, 1);
         return true;
     }
 

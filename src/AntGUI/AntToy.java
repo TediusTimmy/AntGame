@@ -234,58 +234,7 @@ public final class AntToy
             }
         });
 
-        JMenu speed = new JMenu("Speed");
-        menuBar.add(speed);
-        JMenuItem speedItem = new JMenuItem("Fastest");
-        speed.add(speedItem);
-        speedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                GoMifune.setOpaque(0);
-                thread.interrupt();
-            }
-        });
-        speedItem = new JMenuItem("Fast");
-        speed.add(speedItem);
-        speedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                GoMifune.setOpaque(10);
-                thread.interrupt();
-            }
-        });
-        speedItem = new JMenuItem("Medium");
-        speed.add(speedItem);
-        speedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                GoMifune.setOpaque(100);
-                thread.interrupt();
-            }
-        });
-        speedItem = new JMenuItem("Slow");
-        speed.add(speedItem);
-        speedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                GoMifune.setOpaque(1000);
-                thread.interrupt();
-            }
-        });
-        speedItem = new JMenuItem("Almost Paused");
-        speed.add(speedItem);
-        speedItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                GoMifune.setOpaque(2592000000L); // One Month
-                thread.interrupt();
-            }
-        });
+        menuBar.add(buildSpeedMenu(thread));
 
         final JPanel OverPanel = new JPanel();
         frame.add(OverPanel);
@@ -344,6 +293,88 @@ public final class AntToy
         console.add(cpanel);
         console.validate();
         return console;
+    }
+
+    private JMenu buildSpeedMenu(final Thread thread)
+    {
+        JMenu speed = new JMenu("Speed");
+        JMenuItem fastest = new JMenuItem("Fastest");
+        JMenuItem fast = new JMenuItem("Fast");
+        JMenuItem medium = new JMenuItem("Medium");
+        JMenuItem slow = new JMenuItem("Slow");
+        JMenuItem paused = new JMenuItem("Almost Paused");
+        speed.add(fastest);
+        fastest.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                GoMifune.setOpaque(0);
+                thread.interrupt();
+                fastest.setEnabled(false);
+                fast.setEnabled(true);
+                medium.setEnabled(true);
+                slow.setEnabled(true);
+                paused.setEnabled(true);
+            }
+        });
+        speed.add(fast);
+        fast.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                GoMifune.setOpaque(10);
+                thread.interrupt();
+                fastest.setEnabled(true);
+                fast.setEnabled(false);
+                medium.setEnabled(true);
+                slow.setEnabled(true);
+                paused.setEnabled(true);
+            }
+        });
+        speed.add(medium);
+        medium.setEnabled(false);
+        medium.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                GoMifune.setOpaque(100);
+                thread.interrupt();
+                fastest.setEnabled(true);
+                fast.setEnabled(true);
+                medium.setEnabled(false);
+                slow.setEnabled(true);
+                paused.setEnabled(true);
+            }
+        });
+        speed.add(slow);
+        slow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                GoMifune.setOpaque(1000);
+                thread.interrupt();
+                fastest.setEnabled(true);
+                fast.setEnabled(true);
+                medium.setEnabled(true);
+                slow.setEnabled(false);
+                paused.setEnabled(true);
+            }
+        });
+        speed.add(paused);
+        paused.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                GoMifune.setOpaque(2592000000L); // One Month
+                thread.interrupt();
+                fastest.setEnabled(true);
+                fast.setEnabled(true);
+                medium.setEnabled(true);
+                slow.setEnabled(true);
+                paused.setEnabled(false);
+            }
+        });
+        return speed;
     }
 
     private JTextField seedField;

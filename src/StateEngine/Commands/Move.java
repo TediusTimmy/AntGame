@@ -70,16 +70,9 @@ public abstract class Move extends Command
             cell.parent.resources.remove(cell);
             cell.parent = endParent;
             endParent.addResource(cell);
-
-            // RULES: Ending on a GREEN base replenishes a BLUE's energy.
-            Cell isGreen = endParent.resources.peek();
-            if ((null != isGreen) && (Color.GREEN == isGreen.color))
-            {
-                cell.energy = world.ENERGY + cost;
-            }
         }
 
-        handleCost(cell, cost);
+        handleCost(cell, world, cost);
 
         return succeededMove;
     }

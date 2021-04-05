@@ -46,7 +46,7 @@ public final class Task extends Command
         victim.machine.states.add(new LinkedList<State>());
         victim.machine.states.getFirst().add(new State(state));
         victim.machine.last = orders;
-        handleCost(cell, 1);
+        handleCost(cell, world, 1);
         return true;
     }
 

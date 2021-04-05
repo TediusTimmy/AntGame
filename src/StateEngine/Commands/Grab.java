@@ -79,7 +79,7 @@ public final class Grab extends Command
         {
             throw new CommandFailed("Tried to grab with nothing to grab.");
         }
-        handleCost(cell, cost);
+        handleCost(cell, world, cost);
         return true;
     }
 

@@ -34,7 +34,7 @@ public final class Drop extends Command
             cell.parent.addResource(cell.held);
             cell.held = null;
             result = true;
-            handleCost(cell, 1);
+            handleCost(cell, world, 1);
         }
         return result;
     }

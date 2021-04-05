@@ -51,7 +51,7 @@ public final class Inform extends Command
                 }
             }
         }
-        handleCost(cell, 1);
+        handleCost(cell, world, 1);
         return true;
     }
 

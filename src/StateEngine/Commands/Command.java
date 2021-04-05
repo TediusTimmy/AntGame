@@ -27,17 +27,21 @@ public abstract class Command
 
     public abstract boolean act(Cell cell, World world) throws CommandFailed;
 
-    protected static void handleCost(Cell cell, int cost)
+    protected static void handleCost(Cell cell, World world, int cost)
     {
-        if (Color.BLUE == cell.color)
+        cell.energy -= cost;
+
+        // RULES: Ending a turn on a GREEN base replenishes a BLUE's energy. (Or a GREEN's!)
+        Cell isGreen = cell.parent.resources.peek();
+        if ((null != isGreen) && (Color.GREEN == isGreen.color))
         {
-            cell.energy -= cost;
-    
-            if (cell.energy <= 0)
-            {
-                cell.active = false;
-                cell.machine.states.clear();
-            }
+            cell.energy = world.ENERGY;
+        }
+
+        if (cell.energy <= 0)
+        {
+            cell.active = false;
+            cell.machine.states.clear();
         }
     }
 
