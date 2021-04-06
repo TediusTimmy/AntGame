@@ -41,7 +41,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.text.DefaultCaret;
 
-import AntWorld.World;
 import StateEngine.StdLib.EnterDebugger;
 import esl2.parser.ParserLogger;
 
@@ -66,11 +65,10 @@ public final class AntToy
         }
     }
 
-    private JFrame frame;
-    private WorldViewer viewer;
+    JFrame frame;
+    WorldViewer viewer;
     private JTextArea debugConsole;
-    private AtomicLong GoMifune;
-    private long turns;
+    AtomicLong GoMifune;
     private File lastDirectory;
 
     public final class Logger extends ParserLogger
@@ -82,7 +80,7 @@ public final class AntToy
         }
     }
 
-    private Logger logger;
+    Logger logger;
 
     public AntToy()
     {
@@ -162,77 +160,7 @@ public final class AntToy
         });
 
         GoMifune = new AtomicLong(100);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run()
-            {
-                while (true)
-                {
-                    try
-                    {
-                        long time = GoMifune.getOpaque();
-                        if (0 != time)
-                        {
-                            Thread.sleep(time);
-                        }
-                    }
-                    catch (InterruptedException e)
-                    {
-                        // I DONT CARE!
-                    }
-                    World.RESULT result = viewer.update();
-                    if (World.RESULT.WIN == result)
-                    {
-                        turns = viewer.getTurns();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                JOptionPane.showMessageDialog(frame, "You've Won!");
-                                // Use logger to synchronize writes to debugConsole.
-                                logger.message("You've Won!\nIt took " + turns + " updates.\n");
-                                frame.setTitle("Ant Toy : You've Won!");
-                            }
-                        });
-                    }
-                    else if (World.RESULT.LOSE == result)
-                    {
-                        turns = viewer.getTurns();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                JOptionPane.showMessageDialog(frame, "You've lost.");
-                                // Use logger to synchronize writes to debugConsole.
-                                logger.message("You've lost.\nIt took " + turns + " updates.\n");
-                                frame.setTitle("Ant Toy : You've lost.");
-                            }
-                        });
-                    }
-                    else if (World.RESULT.BROKEN == result)
-                    {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                JOptionPane.showMessageDialog(frame, "You script crashed. See debug screen for details.");
-                                frame.setTitle("Ant Toy : Your script crashed. See debug screen for details.");
-                            }
-                        });
-                    }
-                    else
-                    {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                viewer.repaint();
-                            }
-                        });
-                    }
-                }
-            }
-        });
+        Thread thread = new Thread(new TimingThread(this));
 
         menuBar.add(buildSpeedMenu(thread));
 
