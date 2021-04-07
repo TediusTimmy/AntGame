@@ -36,6 +36,10 @@ public final class Drop extends StandardConstantFunction
             throw new TypedOperationException("GREEN tried to Drop.");
         }
         context.cell.machine.setCommand(new StateEngine.Commands.Drop());
+        if (null == context.cell.held)
+        {
+            return ConstantsSingleton.getInstance().DOUBLE_ZERO;
+        }
         return ConstantsSingleton.getInstance().DOUBLE_ONE;
     }
 

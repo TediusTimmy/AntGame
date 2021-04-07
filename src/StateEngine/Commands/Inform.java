@@ -20,6 +20,7 @@ package StateEngine.Commands;
 import AntWorld.Cell;
 import AntWorld.World;
 import esl2.engine.stdlib.PushBack;
+import esl2.types.ProgrammingException;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
@@ -34,7 +35,7 @@ public final class Inform extends Command
     }
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         for (Cell child : cell.parent.resources)
         {
@@ -47,7 +48,7 @@ public final class Inform extends Command
                 catch (TypedOperationException e)
                 {
                     // This should NEVER be executed.
-                    throw new CommandFailed(e.getLocalizedMessage());
+                    throw new ProgrammingException("PushBack with Array and Value threw exception: " + e.getLocalizedMessage());
                 }
             }
         }

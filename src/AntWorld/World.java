@@ -31,7 +31,6 @@ import JSON.JSONString;
 import JSON.JSONValue;
 import StateEngine.Environment;
 import StateEngine.State;
-import StateEngine.Commands.CommandFailed;
 import StateEngine.CtrlCCtrlV.CallWrapper;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import StateEngine.CtrlCCtrlV.DebuggerHook;
@@ -167,7 +166,7 @@ public final class World
                     someUpdate = cell.machine.next.act(cell, this);
                 }
             }
-            catch (TypedOperationException | FatalException | CommandFailed e)
+            catch (TypedOperationException | FatalException e)
             {
                 everythingIsFucked = true;
                 context.fileOut.message("Game has ended with error: " + e.getLocalizedMessage());
@@ -189,7 +188,7 @@ public final class World
                     cell.machine.next.act(cell, this);
                 }
             }
-            catch (TypedOperationException | FatalException | CommandFailed e)
+            catch (TypedOperationException | FatalException e)
             {
                 everythingIsFucked = true;
                 context.fileOut.message("Game has ended with error: " + e.getLocalizedMessage());

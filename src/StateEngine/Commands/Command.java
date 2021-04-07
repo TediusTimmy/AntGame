@@ -25,7 +25,7 @@ import AntWorld.World;
 public abstract class Command
 {
 
-    public abstract boolean act(Cell cell, World world) throws CommandFailed;
+    public abstract boolean act(Cell cell, World world);
 
     protected static void handleCost(Cell cell, World world, int cost)
     {

@@ -19,6 +19,7 @@ package StateEngine.StdLib;
 
 import java.awt.Color;
 
+import AntWorld.Cell;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
 import esl2.types.FatalException;
@@ -34,6 +35,11 @@ public final class Grab extends StandardConstantFunction
         if (Color.GREEN == context.cell.color)
         {
             throw new TypedOperationException("GREEN tried to Grab.");
+        }
+        Cell top = context.cell.parent.getFirstNot(context.cell);
+        if ((null == top) || (Color.RED == top.color))
+        {
+            throw new TypedOperationException("Tried to grab with nothing to grab.");
         }
         context.cell.machine.setCommand(new StateEngine.Commands.Grab());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;

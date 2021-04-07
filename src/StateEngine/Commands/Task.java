@@ -39,7 +39,7 @@ public final class Task extends Command
     }
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         victim.active = true;
         victim.energy = world.ENERGY;

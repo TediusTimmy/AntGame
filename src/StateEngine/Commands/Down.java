@@ -24,7 +24,7 @@ public final class Down extends Move
 {
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         setStartParent(cell);
         if (cell.y < world.y - 1)

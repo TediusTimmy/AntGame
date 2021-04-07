@@ -24,7 +24,7 @@ public final class Drop extends Command
 {
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         boolean result = false;
         if (null != cell.held)

@@ -26,7 +26,7 @@ public final class Grab extends Command
 {
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         int cost = 1;
         Cell top = cell.parent.getFirstNot(cell);
@@ -74,10 +74,6 @@ public final class Grab extends Command
                     }
                 }
             }
-        }
-        else
-        {
-            throw new CommandFailed("Tried to grab with nothing to grab.");
         }
         handleCost(cell, world, cost);
         return true;

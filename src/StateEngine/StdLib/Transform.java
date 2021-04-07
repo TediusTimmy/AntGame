@@ -19,9 +19,9 @@ package StateEngine.StdLib;
 
 import java.awt.Color;
 
+import AntWorld.Cell;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import esl2.engine.ConstantsSingleton;
-import esl2.types.FatalException;
 import esl2.types.TypedOperationException;
 import esl2.types.ValueType;
 
@@ -29,11 +29,19 @@ public final class Transform extends StandardConstantFunction
 {
 
     @Override
-    public ValueType fun(CallingContext context) throws TypedOperationException, FatalException
+    public ValueType fun(CallingContext context) throws TypedOperationException
     {
         if (Color.GREEN == context.cell.color)
         {
             throw new TypedOperationException("GREEN tried to Transform.");
+        }
+        Cell top = context.cell.parent.getFirstNot(context.cell);
+        if (null != top)
+        {
+            if ((Color.RED != top.color) && (Color.LIGHT_GRAY != top.color) && (Color.DARK_GRAY != top.color))
+            {
+                throw new TypedOperationException("Tried to transform with obstructions in the way.");
+            }
         }
         context.cell.machine.setCommand(new StateEngine.Commands.Transform());
         return ConstantsSingleton.getInstance().DOUBLE_ONE;

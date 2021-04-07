@@ -24,7 +24,7 @@ public final class Right extends Move
 {
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         setStartParent(cell);
         if (cell.x < world.x - 1)

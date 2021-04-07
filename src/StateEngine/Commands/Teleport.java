@@ -31,7 +31,7 @@ public final class Teleport extends Command
     }
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         cell.parent.resources.remove(cell);
         cell.parent = to;

@@ -26,7 +26,7 @@ public final class Transform extends Command
 {
 
     @Override
-    public boolean act(Cell cell, World world) throws CommandFailed
+    public boolean act(Cell cell, World world)
     {
         Cell top = cell.parent.getFirstNot(cell);
         if (null != top)
@@ -64,10 +64,6 @@ public final class Transform extends Command
                     cell.parent = newParent;
                     newParent.addResource(cell);
                 }
-            }
-            else
-            {
-                throw new CommandFailed("Tried to transform with obstructions in the way.");
             }
         }
         else
