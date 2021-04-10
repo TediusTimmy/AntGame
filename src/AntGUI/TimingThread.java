@@ -58,6 +58,10 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
+                        if (0 == controlled.GoMifune.getOpaque())
+                        { // The program becomes unusable to me at fastest speed.
+                            controlled.GoMifune.setOpaque(10);
+                        }
                         JOptionPane.showMessageDialog(controlled.frame, "You've Won!");
                         // Use logger to synchronize writes to debugConsole.
                         controlled.logger.message("You've Won!\nIt took " + turns + " updates.\n");
@@ -72,6 +76,10 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
+                        if (0 == controlled.GoMifune.getOpaque())
+                        { // The program becomes unusable to me at fastest speed.
+                            controlled.GoMifune.setOpaque(10);
+                        }
                         JOptionPane.showMessageDialog(controlled.frame, "You've lost.");
                         // Use logger to synchronize writes to debugConsole.
                         controlled.logger.message("You've lost.\nIt took " + turns + " updates.\n");
@@ -85,6 +93,10 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
+                        if (0 == controlled.GoMifune.getOpaque())
+                        { // The program becomes unusable to me at fastest speed.
+                            controlled.GoMifune.setOpaque(10);
+                        }
                         JOptionPane.showMessageDialog(controlled.frame, "You script crashed. See debug screen for details.");
                         controlled.frame.setTitle("Ant Toy : Your script crashed. See debug screen for details.");
                     }
