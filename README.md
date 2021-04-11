@@ -70,7 +70,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Abandon () # Pops the current State queue from the stack. Abandons the current stack frame.
 * double CurrentEnergy () # Returns the current amount of energy a BLUE has. Is an error for a GREEN to call this.
 * double Down () # Returns one. Schedule a Down command.
-* double Drop () # Returns one. Schedule a Drop command.
+* double Drop () # Schedule a Drop command. Returns one if something was dropped, zero otherwise.
 * double Enqueue (array) # Returns one. Argument should be an array of string. Performs the string version of the function over the array.
 * double Enqueue (string) # Returns one. Argument should be a State name. Queues up the named State to run later by placing it at the end of the queue, where it belongs.
 * double EnterDebugger () # Returns zero. Function described below.
@@ -81,7 +81,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double FreeAgents () # Returns the count of BLUEs or GREENs on the current location that can be Tasked. GREENs get a BLUE count and vice-versa.
 * array GetInfo () # Returns an array of everything the cell has been Informed about since the last update.
 * string GetName() # Returns the name of the State that is currently being processed.
-* double Grab () # Schedule a Grab command. Returns one if there is something to grab, zero otherwise. Throws an error if RED.
+* double Grab () # Schedule a Grab command. Returns one if there is something to grab, throws an error otherwise.
 * array Inform (value) # Returns one. Passes a piece of data to every active thing in the current location. Inform is a command.
 * double Inject (array) # Returns one. Argument should be an array of string. Insert a new queue as the second on the stack and add these States to it in their array order.
 * double Inject (string) # Returns one. Insert a new queue as the second on the stack and add this State to it.
