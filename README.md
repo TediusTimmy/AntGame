@@ -80,6 +80,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Follow (string) # Returns one. "Queues" up the named State to follow the current State.
 * double FreeAgents () # Returns the count of BLUEs or GREENs on the current location that can be Tasked. GREENs get a BLUE count and vice-versa.
 * array GetInfo () # Returns an array of everything the cell has been Informed about since the last update.
+* string GetName() # Returns the name of the State that is currently being processed.
 * double Grab () # Schedule a Grab command. Returns one if there is something to grab, zero otherwise. Throws an error if RED.
 * array Inform (value) # Returns one. Passes a piece of data to every active thing in the current location. Inform is a command.
 * double Inject (array) # Returns one. Argument should be an array of string. Insert a new queue as the second on the stack and add these States to it in their array order.
