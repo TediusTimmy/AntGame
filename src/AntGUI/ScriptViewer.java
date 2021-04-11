@@ -18,6 +18,7 @@
 package AntGUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -38,8 +41,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -47,14 +50,19 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 import AntUtil.JSONIO;
 import AntUtil.PreEnvironment;
 import AntUtil.PreState;
 import StateEngine.Environment;
+import StateEngine.CtrlCCtrlV.Executor;
+import StateEngine.CtrlCCtrlV.FunctionDefinitions;
 import esl2.input.Lexeme;
 import esl2.input.Lexer;
 import esl2.input.StringInput;
+import esl2.input.Token;
 import esl2.types.FatalException;
 
 public class ScriptViewer extends JFrame
@@ -257,7 +265,7 @@ public class ScriptViewer extends JFrame
     }
 
     private DefaultListModel<String> statesList;
-    private JTextArea functions;
+    private JTextPane functions;
     private JCheckBox isStart;
     private DefaultListModel<String> dataList;
     private JButton dataRemove;
@@ -290,7 +298,7 @@ public class ScriptViewer extends JFrame
         JTextField stateName = new JTextField("State name to Add");
         leftbottom.add(stateName, BorderLayout.SOUTH);
 
-        functions = new JTextArea();
+        functions = new JTextPane();
         functions.setEnabled(false);
         JScrollPane functionsScroll = new JScrollPane(functions);
         functionsScroll.setPreferredSize(new Dimension(600, 600));
@@ -385,8 +393,7 @@ public class ScriptViewer extends JFrame
             }
         });
 
-        DefaultStyledDocument doc = new DefaultStyledDocument();
-        doc.setDocumentFilter(new DocumentFilter() {
+        functionsFilter = new DocumentFilter() {
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException
             {
@@ -414,8 +421,8 @@ public class ScriptViewer extends JFrame
                 super.remove(fb, offset, length);
                 updateFunctions(states.getSelectedValue(), fb.getDocument().getText(0, fb.getDocument().getLength()));
             }
-        });
-        functions.setDocument(doc);
+        };
+        setFunctionsText("");
 
         isStart.addActionListener(new ActionListener() {
             @Override
@@ -438,6 +445,18 @@ public class ScriptViewer extends JFrame
                         myState.isInitialState = false;
                     }
                 }
+            }
+        });
+        data.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (true == e.getValueIsAdjusting())
+                {
+                    return;
+                }
+                currentVariable = data.getSelectedValue();
+                updateHighlight();
             }
         });
         dataRemove.addActionListener(new ActionListener() {
@@ -553,7 +572,7 @@ public class ScriptViewer extends JFrame
         functions.setEnabled(true);
         if (true == GLOBALS.equals(stateName))
         {
-            functions.setText(env.functions.getValue());
+            setFunctionsText(env.functions.getValue());
             isStart.setEnabled(false);
             isStart.setSelected(false);
             dataList.clear();
@@ -562,7 +581,7 @@ public class ScriptViewer extends JFrame
         }
         else
         {
-            functions.setText(env.states.get(stateName).functions.getValue());
+            setFunctionsText(env.states.get(stateName).functions.getValue());
             isStart.setEnabled(true);
             isStart.setSelected(env.states.get(stateName).isInitialState);
             dataList.clear();
@@ -578,7 +597,7 @@ public class ScriptViewer extends JFrame
     private void clearData()
     {
         functions.setEnabled(false);
-        functions.setText("");
+        setFunctionsText("");
         isStart.setEnabled(false);
         isStart.setSelected(false);
         dataList.clear();
@@ -588,6 +607,7 @@ public class ScriptViewer extends JFrame
 
     private void updateFunctions(String stateName, String newText)
     {
+        updateHighlight();
         if (true == GLOBALS.equals(stateName))
         {
             // We need to check for this because we recycle the text box.
@@ -606,6 +626,146 @@ public class ScriptViewer extends JFrame
                 dirty = true;
                 env.states.get(stateName).functions.setValue(newText);
             }
+        }
+    }
+
+    DocumentFilter functionsFilter;
+    DefaultStyledDocument doc;
+    private void setFunctionsText(String text)
+    {
+        doc = new DefaultStyledDocument();
+        functions.setDocument(doc);
+        functions.setText(text);
+        doc.setDocumentFilter(functionsFilter);
+
+        updateHighlight();
+    }
+
+    private String currentVariable;
+    private void updateHighlight()
+    {
+        String text;
+        try
+        {
+            text = doc.getText(0, doc.getLength());
+        }
+        catch (BadLocationException e)
+        {
+            // Something bad happened, and we're going to abort.
+            return;
+        }
+
+        TreeMap<Integer, Integer> lines = new TreeMap<Integer, Integer>();
+        {
+            int line = 2;
+            lines.put(1, 0);
+            for (int c = 0; c < text.length(); ++c)
+            {
+                if (text.charAt(c) == '\n')
+                {
+                    lines.put(line, c);
+                    ++line;
+                }
+            }
+        }
+
+        TreeSet<String> functionNames = new TreeSet<String>();
+        {
+            Executor executor = new Executor();
+            FunctionDefinitions funDefs = new FunctionDefinitions();
+            funDefs.buildDefaultFunctions(executor);
+            functionNames.addAll(funDefs.stdLibFunctions.funs.keySet());
+        }
+
+        StyleContext style = StyleContext.getDefaultStyleContext();
+        doc.setCharacterAttributes(0, doc.getLength(), style.getEmptySet(), true);
+
+        AttributeSet bold = style.addAttribute(style.getEmptySet(), StyleConstants.Bold, true);
+        AttributeSet italic = style.addAttribute(style.getEmptySet(), StyleConstants.Italic, true);
+        AttributeSet underline = style.addAttribute(style.getEmptySet(), StyleConstants.Underline, true);
+        AttributeSet bad = style.addAttribute(style.getEmptySet(), StyleConstants.Background, Color.MAGENTA);
+        AttributeSet found = style.addAttribute(style.getEmptySet(), StyleConstants.Background, Color.CYAN);
+        try
+        {
+            StringInput varName = new StringInput(text);
+            Lexer lexer = new Lexer(varName, "Functions Field", 1, 1);
+
+            boolean lastFunct = false;
+            while (Lexeme.END_OF_FILE != lexer.peekNextToken().tokenType)
+            {
+                Token tok = lexer.getNextToken();
+
+                switch (tok.tokenType)
+                {
+                case ABOVE:
+                case ALSO:
+                case BELOW:
+                case BREAK:
+                case CALL:
+                case CASE:
+                case CONTINUE:
+                case DO:
+                case DOWNTO:
+                case ELSE:
+                case ELSEIF:
+                case END:
+                case FOR:
+                case FROM:
+                case FUNCTION:
+                case IF:
+                case IN:
+                case IS:
+                case RETURN:
+                case SELECT:
+                case SET:
+                case STEP:
+                case THEN:
+                case TO:
+                case WHILE:
+                    doc.setCharacterAttributes(lines.get(tok.lineNumber) + tok.lineLocation, tok.text.length(), bold, true);
+                    if (Lexeme.FUNCTION == tok.tokenType)
+                    {
+                        lastFunct = true;
+                    }
+                    else
+                    {
+                        lastFunct = false;
+                    }
+                    break;
+                case IDENTIFIER:
+                    if (true == lastFunct)
+                    {
+                        functionNames.add(tok.text);
+                    }
+                    lastFunct = false;
+                    if (true == functionNames.contains(tok.text))
+                    {
+                        doc.setCharacterAttributes(lines.get(tok.lineNumber) + tok.lineLocation, tok.text.length(), underline, true);
+                    }
+                    else
+                    {
+                        doc.setCharacterAttributes(lines.get(tok.lineNumber) + tok.lineLocation, tok.text.length(), italic, true);
+                    }
+                    if ((null != currentVariable) && (currentVariable.equals(tok.text)))
+                    {
+                        doc.setCharacterAttributes(lines.get(tok.lineNumber) + tok.lineLocation, tok.text.length(), found, false);
+                    }
+                    break;
+                case INVALID:
+                case LEXER_NEVER_RETURNS_THIS:
+                    lastFunct = false;
+                    doc.setCharacterAttributes(lines.get(tok.lineNumber) + tok.lineLocation, tok.text.length(), bad, true);
+                    break;
+                default:
+                    lastFunct = false;
+                    break;
+                }
+            }
+        }
+        catch (FatalException e)
+        {
+            // Something bad happened, and we're going to abort.
+            return;
         }
     }
 
