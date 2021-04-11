@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,15 +46,22 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import AntUtil.JSONIO;
 import AntUtil.PreEnvironment;
@@ -423,6 +433,36 @@ public class ScriptViewer extends JFrame
             }
         };
         setFunctionsText("");
+        functions.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "PerformUndo");
+        functions.getActionMap().put("PerformUndo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try
+                {
+                    ScriptViewer.this.undos.undo();
+                }
+                catch (CannotUndoException cue)
+                {
+                    // Just ignore...
+                }
+            }
+        });
+        functions.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK), "PerformRedo");
+        functions.getActionMap().put("PerformRedo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try
+                {
+                    ScriptViewer.this.undos.redo();
+                }
+                catch (CannotRedoException cre)
+                {
+                    // Just ignore...
+                }
+            }
+        });
 
         isStart.addActionListener(new ActionListener() {
             @Override
@@ -631,12 +671,24 @@ public class ScriptViewer extends JFrame
 
     DocumentFilter functionsFilter;
     DefaultStyledDocument doc;
+    UndoManager undos;
     private void setFunctionsText(String text)
     {
         doc = new DefaultStyledDocument();
         functions.setDocument(doc);
         functions.setText(text);
         doc.setDocumentFilter(functionsFilter);
+        undos = new UndoManager();
+        doc.addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e)
+            {
+                if (false == UIManager.getString("AbstractDocument.styleChangeText").equals(e.getEdit().getPresentationName()))
+                {
+                    undos.addEdit(e.getEdit());
+                }
+            }
+        });
 
         updateHighlight();
     }
