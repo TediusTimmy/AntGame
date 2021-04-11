@@ -49,7 +49,7 @@ public final class World
     private int first_active;
     private int noMoveTurns;
 
-    private boolean everythingIsFucked;
+    private boolean everythingIsBroken;
     public final int ENERGY;
     public final int LOOK;
     private final double DENSITY;
@@ -80,7 +80,7 @@ public final class World
             }
         }
 
-        everythingIsFucked = true;
+        everythingIsBroken = true;
 
         first_active = greens.size();
         final NonSplittableRandom rand = new NonSplittableRandom(jenkins_hash(seed, 0, 0));
@@ -127,7 +127,7 @@ public final class World
 
     public RESULT update()
     {
-        if (true == everythingIsFucked)
+        if (true == everythingIsBroken)
         {
             return RESULT.NONE;
         }
@@ -149,7 +149,7 @@ public final class World
             }
             catch (TypedOperationException | FatalException e)
             {
-                everythingIsFucked = true;
+                everythingIsBroken = true;
                 context.fileOut.message("Game has ended with error: " + e.getLocalizedMessage());
                 return RESULT.BROKEN;
             }
@@ -171,7 +171,7 @@ public final class World
             }
             catch (TypedOperationException | FatalException e)
             {
-                everythingIsFucked = true;
+                everythingIsBroken = true;
                 context.fileOut.message("Game has ended with error: " + e.getLocalizedMessage());
                 return RESULT.BROKEN;
             }
@@ -365,7 +365,7 @@ public final class World
         greens.get(first_active).machine.states.add(new LinkedList<State>());
         greens.get(first_active).machine.states.getFirst().add(new State(env.stateArchitypes.get(env.initialState)));
 
-        everythingIsFucked = false;
+        everythingIsBroken = false;
     }
 
 }
