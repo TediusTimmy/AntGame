@@ -19,34 +19,15 @@ package AntWorld;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeSet;
 
 import AntUtil.NonSplittableRandom;
 import AntUtil.Rand48;
-import JSON.JSONObject;
-import JSON.JSONString;
-import JSON.JSONValue;
 import StateEngine.Environment;
 import StateEngine.State;
-import StateEngine.CtrlCCtrlV.CallWrapper;
 import StateEngine.CtrlCCtrlV.CallingContext;
 import StateEngine.CtrlCCtrlV.DebuggerHook;
-import StateEngine.CtrlCCtrlV.Executor;
-import StateEngine.CtrlCCtrlV.ExecutorBuilder;
-import StateEngine.CtrlCCtrlV.FunctionDefinitions;
-import StateEngine.CtrlCCtrlV.StateFrame;
-import esl2.engine.ConstantsSingleton;
-import esl2.input.Lexeme;
-import esl2.input.Lexer;
-import esl2.input.StringInput;
-import esl2.parser.FunctionPairs;
-import esl2.parser.GlobalGetterSetter;
-import esl2.parser.Parser;
 import esl2.parser.ParserLogger;
-import esl2.parser.SymbolTable;
 import esl2.types.FatalException;
 import esl2.types.TypedOperationException;
 
@@ -368,169 +349,10 @@ public final class World
         return hash;
     }
 
-    private static void assertType(JSONValue value, Class<?> type, String name, String expected) throws FatalException
+    private CallingContext context;
+
+    public void initialize(Environment env, ParserLogger logger)
     {
-        if (false == type.isInstance(value))
-        {
-            throw new FatalException("In file \"" + value.sourceFile + " on line " + value.lineNumber + " at " + value.charNumber + "\n" +
-                "\tError: \"" + name + "\" is not of the proper type. A(n) " + expected + " was expected.");
-        }
-    }
-
-    Environment env;
-    CallingContext context;
-
-    public void initializeFrom(JSONValue here, ParserLogger logger) throws FatalException
-    {
-        env = new Environment();
-        env.executor = new Executor();
-        assertType(here, JSONObject.class, "file input", "object");
-        JSONObject input = (JSONObject)here;
-        FunctionDefinitions funDefs = new FunctionDefinitions();
-        funDefs.buildDefaultFunctions(env.executor);
-        for (Map.Entry<JSONString, JSONValue> entry : input.contents.entrySet())
-        {
-            switch(entry.getKey().getValue())
-            {
-            case "Initial State":
-                assertType(entry.getValue(), JSONString.class, "Initial State", "string");
-                env.initialState = ((JSONString)entry.getValue()).getValue();
-                break;
-            case "Global Functions":
-                // NOTA BENE : We should always hit this before "States" because the Object uses a sorted Map.
-                assertType(entry.getValue(), JSONString.class, "Global Functions", "string");
-
-            {
-                SymbolTable table = new SymbolTable();
-                table.pushContext(); // We need a base context to operate on.
-                table.frameInfo = env.executor.debugFrames;
-                table.gs = funDefs.gs;
-                table.addAll(funDefs.stdLibFunctions);
-                ExecutorBuilder.finalizeTable(table);
-                table.addedHere = funDefs.sharedFunctions;
-
-                StringInput globalFuns = new StringInput(((JSONString)entry.getValue()).getValue());
-                Lexer lexer = new Lexer(globalFuns, entry.getValue().sourceFile + " Global Functions", entry.getValue().lineNumber, entry.getValue().charNumber + 1);
-                boolean result = Parser.ParseFunctions(lexer, table, env.executor, logger);
-
-                if (false == result)
-                {
-                    throw new FatalException("The 'Global Functions' contained more than functions.");
-                }
-            }
-
-                break;
-            case "States":
-                assertType(entry.getValue(), JSONObject.class, "States", "object");
-
-                for (Map.Entry<JSONString, JSONValue> state : ((JSONObject)entry.getValue()).contents.entrySet())
-                {
-                    assertType(state.getValue(), JSONObject.class, state.getKey().getValue(), "object");
-                    State staat = new State();
-                    staat.name = state.getKey().getValue();
-                    env.stateArchitypes.put(staat.name, staat);
-
-                    GlobalGetterSetter vars = null;
-                    for (Map.Entry<JSONString, JSONValue> piece : ((JSONObject)state.getValue()).contents.entrySet())
-                    {
-                        switch(piece.getKey().getValue())
-                        {
-                        case "Data":
-                            assertType(piece.getValue(), JSONString.class, "Data", "string");
-
-                        {
-                            ArrayList<String> varNames = new ArrayList<String>();
-                            TreeSet<String> nameSet = new TreeSet<String>();
-                            StringInput stateData = new StringInput(((JSONString)piece.getValue()).getValue());
-                            Lexer lexer = new Lexer(stateData, staat.name + " Data", piece.getValue().lineNumber, piece.getValue().charNumber);
-
-                            while (Lexeme.END_OF_FILE != lexer.peekNextToken().tokenType)
-                            {
-                                String varName = lexer.peekNextToken().text;
-
-                                if (Lexeme.IDENTIFIER != lexer.getNextToken().tokenType)
-                                {
-                                    throw new FatalException("Variable named >" + varName + "< is not a valid identifier.");
-                                }
-
-                                if (true == nameSet.contains(varName))
-                                {
-                                    throw new FatalException("Variable named " + varName + " is not unique.");
-                                }
-
-                                if (null != funDefs.sharedFunctions.funs.get(varName))
-                                {
-                                    throw new FatalException("Variable named " + varName + " cannot have the name of an intrinsic function or a global function.");
-                                }
-
-                                nameSet.add(varName);
-                                varNames.add(varName);
-                            }
-
-                            vars = FunctionDefinitions.buildGetterSetter(varNames, staat.name);
-                            StateFrame frame = new StateFrame();
-                            frame.frameName = staat.name;
-                            for (int i = 0; i < varNames.size(); ++i)
-                            {
-                                Integer var = Integer.valueOf(i);
-                                frame.vars.put(varNames.get(i), var);
-                                frame.varNames.put(var, varNames.get(i));
-                            }
-                            env.executor.stateDebugData.put(staat.name, frame);
-                            staat.data.addAll(Collections.nCopies(varNames.size(), ConstantsSingleton.getInstance().DOUBLE_ZERO));
-                        }
-
-                            break;
-                        case "Functions":
-                            assertType(piece.getValue(), JSONString.class, "Functions", "string");
-
-                        {
-                            SymbolTable table = new SymbolTable();
-                            table.pushContext(); // We need a base context to operate on.
-                            table.frameInfo = env.executor.debugFrames;
-                            table.gs = funDefs.gs;
-                            table.addAll(funDefs.stdLibFunctions);
-                            table.addAll(funDefs.sharedFunctions);
-                            table.globalGS = vars; // Because "Data" should have been processed first.
-                            ExecutorBuilder.finalizeTable(table);
-                            table.addedHere = new FunctionPairs();
-
-                            StringInput funs = new StringInput(((JSONString)piece.getValue()).getValue());
-                            Lexer lexer = new Lexer(funs, staat.name + " Functions", piece.getValue().lineNumber, piece.getValue().charNumber + 1);
-                            boolean result = Parser.ParseFunctions(lexer, table, env.executor, logger);
-                           
-                            if (false == result)
-                            {
-                                throw new FatalException("The State '" + staat.name + "' Functions contained more than functions.");
-                            }
-
-                            staat.update = getFunction("Update", 1, staat.name, table, env.executor);
-                        }
-
-                            break;
-                        default:
-                            logger.message("On line " + piece.getKey().lineNumber + " at " + piece.getKey().charNumber + ":\n" +
-                                "\tIgnoring unknown thing \"" + piece.getKey().getValue() + "\" in state \"" + staat.name + "\".");
-                            // Ignore me.
-                            break;
-                        }
-                    }
-                }
-
-                if (false == env.stateArchitypes.containsKey(env.initialState))
-                {
-                    throw new FatalException("The Initial State '" + env.initialState + "' was never defined.");
-                }
-
-                break;
-            default:
-                logger.message("On line " + entry.getKey().lineNumber + " at " + entry.getKey().charNumber + ":\n" +
-                    "\tIgnoring unknown thing \"" + entry.getKey().getValue() + "\" in base object.");
-                // Ignore me.
-                break;
-            }
-        }
-
         context = new CallingContext();
         context.environment = env;
         context.executor = env.executor;
@@ -544,23 +366,6 @@ public final class World
         greens.get(first_active).machine.states.getFirst().add(new State(env.stateArchitypes.get(env.initialState)));
 
         everythingIsFucked = false;
-    }
-
-    private static CallWrapper getFunction(String name, int nargs, String stateName, SymbolTable table, Executor executor) throws FatalException
-    {
-        if (null != table.addedHere.funs.get(name))
-        {
-            int outputFun = table.addedHere.funs.get(name).intValue();
-            if (nargs != executor.args.get(outputFun).intValue())
-            {
-                throw new FatalException("The \"" + name + "\" function of the State '" + stateName + "' doesn't take " + Integer.toString(nargs) + " argument(s).");
-            }
-            return new StateEngine.CtrlCCtrlV.CallWrapper(outputFun, executor.functions.get(outputFun).token);
-        }
-        else
-        {
-            throw new FatalException("The State '" + stateName + "' doesn't have a function called \"" + name + "\".");
-        }
     }
 
 }

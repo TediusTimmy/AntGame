@@ -25,13 +25,10 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
+import AntUtil.JSONIO;
 import AntWorld.World;
-import JSON.JSONValue;
-import JSON.Lexer;
-import JSON.Parser;
+import StateEngine.Environment;
 import StateEngine.StdLib.Look;
-import esl2.input.FileInput;
-import esl2.parser.ParserException;
 import esl2.parser.ParserLogger;
 import esl2.types.FatalException;
 
@@ -152,7 +149,19 @@ public final class WorldViewer extends JPanel
 
     public boolean loadFile(String fileName, ParserLogger logger)
     {
-        boolean result = true;
+        try
+        {
+            return loadData(JSONIO.transform(JSONIO.initialize(JSONIO.readFile(fileName, logger), logger), logger), logger);
+        }
+        catch (FatalException e)
+        {
+            logger.message(e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    public boolean loadData(Environment env, ParserLogger logger)
+    {
         Rectangle rect = this.getBounds(null);
         x = (int)rect.getWidth();
         y = (int)rect.getHeight();
@@ -160,19 +169,8 @@ public final class WorldViewer extends JPanel
         wy = y / scale - 4;
         world = new World(seed, wx, wy, energy, look, density);
 
-        try
-        {
-            FileInput file = new FileInput(fileName);
-            Lexer lexer = new Lexer(file, fileName, 1, 1);
-            JSONValue val = Parser.parse(lexer, logger);
-            world.initializeFrom(val, logger);
-        }
-        catch (FatalException | ParserException e)
-        {
-            logger.message(e.getLocalizedMessage());
-            result = false;
-        }
-        return result;
+        world.initialize(env, logger);
+        return true;
     }
 
 }

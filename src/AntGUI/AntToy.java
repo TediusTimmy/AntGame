@@ -69,7 +69,7 @@ public final class AntToy
     WorldViewer viewer;
     private JTextArea debugConsole;
     AtomicLong GoMifune;
-    private File lastDirectory;
+    File lastDirectory;
 
     public final class Logger extends ParserLogger
     {
@@ -123,6 +123,17 @@ public final class AntToy
                         }
                     }
                 }
+            }
+        });
+
+        JMenuItem edit = new JMenuItem("Edit");
+        menu.add(edit);
+        final JFrame editWin = new ScriptViewer(this);
+        edit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                editWin.setVisible(true);
             }
         });
 
@@ -182,7 +193,6 @@ public final class AntToy
     private JFrame buildDebugConsole()
     {
         JFrame console = new JFrame();
-        console.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         console.setLocation(100, 100);
         console.setSize(640, 480);
         JPanel cpanel = new JPanel();
