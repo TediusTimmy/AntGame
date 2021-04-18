@@ -160,6 +160,18 @@ public final class AntToy
             }
         });
 
+        JMenuItem reset = new JMenuItem("Reset");
+        menu.add(reset);
+        reset.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                frame.setTitle("Ant Toy");
+                frame.setResizable(true);
+                viewer.reset();
+            }
+        });
+
         JMenuItem exit = new JMenuItem("Exit");
         menu.add(exit);
         exit.addActionListener(new ActionListener() {
