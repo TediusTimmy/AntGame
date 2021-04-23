@@ -57,6 +57,7 @@ This JSON object has three properties:
 
 # The Language
 I just decided to use ESL2, which is also located on this GitHub somewhere. There are some changes and additions, described below.
+For the base language reference, see here: https://github.com/TediusTimmy/ESL2
 
 ## Comments
 `"#" To end of line`  
