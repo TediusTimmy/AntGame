@@ -40,7 +40,7 @@ public final class TimingThread implements Runnable
         {
             try
             {
-                long time = controlled.GoMifune.getOpaque();
+                long time = controlled.GoMifune.get();
                 if (0 != time)
                 {
                     Thread.sleep(time);
@@ -58,9 +58,9 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
-                        if (0 == controlled.GoMifune.getOpaque())
+                        if (0 == controlled.GoMifune.get())
                         { // The program becomes unusable to me at fastest speed.
-                            controlled.GoMifune.setOpaque(10);
+                            controlled.GoMifune.set(10);
                         }
                         JOptionPane.showMessageDialog(controlled.frame, "You've Won!");
                         // Use logger to synchronize writes to debugConsole.
@@ -76,9 +76,9 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
-                        if (0 == controlled.GoMifune.getOpaque())
+                        if (0 == controlled.GoMifune.get())
                         { // The program becomes unusable to me at fastest speed.
-                            controlled.GoMifune.setOpaque(10);
+                            controlled.GoMifune.set(10);
                         }
                         JOptionPane.showMessageDialog(controlled.frame, "You've lost.");
                         // Use logger to synchronize writes to debugConsole.
@@ -93,9 +93,9 @@ public final class TimingThread implements Runnable
                     @Override
                     public void run()
                     {
-                        if (0 == controlled.GoMifune.getOpaque())
+                        if (0 == controlled.GoMifune.get())
                         { // The program becomes unusable to me at fastest speed.
-                            controlled.GoMifune.setOpaque(10);
+                            controlled.GoMifune.set(10);
                         }
                         JOptionPane.showMessageDialog(controlled.frame, "You script crashed. See debug screen for details.");
                         controlled.frame.setTitle("Ant Toy : Your script crashed. See debug screen for details.");

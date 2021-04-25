@@ -47,6 +47,11 @@ public final class WorldViewer extends JPanel
     public double density;
     public int scale;
 
+    // Java 8 has a bug, wherein the size of the titlebar changes depending if the
+    // frame is resizable or not. It is a look-and-feel issue with the default Windows
+    // look-and-feel. We're going to hack around that.
+    private boolean hack;
+
     public WorldViewer()
     {
         x = -1;
@@ -56,6 +61,8 @@ public final class WorldViewer extends JPanel
         look = 20;
         density = 0.01;
         scale = 10;
+
+        hack = false;
 
         addMouseMotionListener(new MouseMotionListener() {
             @Override
@@ -91,6 +98,7 @@ public final class WorldViewer extends JPanel
     {
         x = -1;
         y = -1;
+        hack = false;
     }
 
     public World.RESULT update()
@@ -121,7 +129,7 @@ public final class WorldViewer extends JPanel
     {
         super.paintComponent(g);
         Rectangle rect = this.getBounds(null);
-        if ((x != rect.getWidth()) && (y != rect.getHeight()))
+        if ((x != rect.getWidth()) && (y != rect.getHeight()) && (false == hack))
         {
             x = (int)rect.getWidth();
             y = (int)rect.getHeight();
@@ -170,6 +178,7 @@ public final class WorldViewer extends JPanel
         world = new World(seed, wx, wy, energy, look, density);
 
         world.initialize(env, logger);
+        hack = true;
         return true;
     }
 

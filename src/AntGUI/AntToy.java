@@ -258,7 +258,7 @@ public final class AntToy
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                GoMifune.setOpaque(0);
+                GoMifune.set(0);
                 thread.interrupt();
                 fastest.setEnabled(false);
                 fast.setEnabled(true);
@@ -272,7 +272,7 @@ public final class AntToy
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                GoMifune.setOpaque(10);
+                GoMifune.set(10);
                 thread.interrupt();
                 fastest.setEnabled(true);
                 fast.setEnabled(false);
@@ -287,7 +287,7 @@ public final class AntToy
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                GoMifune.setOpaque(100);
+                GoMifune.set(100);
                 thread.interrupt();
                 fastest.setEnabled(true);
                 fast.setEnabled(true);
@@ -301,7 +301,7 @@ public final class AntToy
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                GoMifune.setOpaque(1000);
+                GoMifune.set(1000);
                 thread.interrupt();
                 fastest.setEnabled(true);
                 fast.setEnabled(true);
@@ -315,7 +315,7 @@ public final class AntToy
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                GoMifune.setOpaque(2592000000L); // One Month
+                GoMifune.set(2592000000L); // One Month
                 thread.interrupt();
                 fastest.setEnabled(true);
                 fast.setEnabled(true);
