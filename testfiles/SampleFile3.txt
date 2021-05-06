@@ -1,0 +1,337 @@
+# An example file to show off how the game works.
+# The author makes no claim of right to this file.
+
+ {
+   "Initial State" : "GREEN",
+   "Global Functions" :
+ "
+   function GOTO (arg) is
+      set source to Path(arg)
+      set command to {}
+      set backpath to {}
+      for x in source do
+         if 'LEFT' = x then
+            set command to PushBack(command, 'Left')
+            set backpath to PushFront(backpath, 'Right')
+         elseif 'RIGHT' = x then
+            set command to PushBack(command, 'Right')
+            set backpath to PushFront(backpath, 'Left')
+         elseif 'UP' = x then
+            set command to PushBack(command, 'Up')
+            set backpath to PushFront(backpath, 'Down')
+         elseif 'DOWN' = x then
+            set command to PushBack(command, 'Down')
+            set backpath to PushFront(backpath, 'Up')
+         end
+      end
+      call Enqueue(command)
+      return backpath
+   end
+
+   function FETCH (arg) is
+      set comeback to GOTO (arg)
+      call Enqueue('Grab')
+      call Enqueue(comeback)
+      call Enqueue('Drop')
+      return arg
+   end
+
+   function TRANSFORM (arg) is
+      set comeback to GOTO (arg)
+      call Enqueue('Make White')
+      call Enqueue(comeback)
+      return arg
+   end
+ ",
+   "States" :
+    {
+      "BLUE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set blues to FindAll('BLUE')
+      if 0 <> Size(blues) then
+         for vec in blues do
+            call FETCH(vec)
+         end
+      end
+      call Enqueue('POST BLUE')
+      call Leave()
+      return ''
+   end
+ "
+       },
+      "PRE BLUE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if IsDictionary(arg) then
+         return ''
+      end
+      if 0 = FreeAgents() then
+         call Report()
+      else
+         call Enqueue('Wait')
+         call Enqueue('Grab')
+         call Enqueue('Make White')
+         call Enqueue('Drop')
+         call Enqueue('Task')
+         call Enqueue('BLUE')
+         call Leave()
+      end
+      return ''
+   end
+ "
+       },
+      "POST BLUE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set nears to FindNearest('GREEN')
+      if 0 <> Size(nears) then
+         call GOTO(nears[0])
+         call Enqueue('PRE BLUE')
+      end
+      call Leave()
+      return ''
+   end
+ "
+       },
+      "BLUE DRONE" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if 'WHITE' <> Look(arg) then
+         call TRANSFORM(arg)
+      end
+      call Enqueue('Report')
+      call Leave()
+      return ''
+   end
+ "
+       },
+      "GREEN" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if IsDictionary(arg) then
+         call Task('PRE BLUE', arg)
+         return ''
+      else
+         call Report()
+      end
+      return arg
+   end
+ "
+       },
+      "GREEN DRONE" :
+       {
+         "Data" : "tasks",
+         "Functions" :
+ "
+   function Update (arg) is
+      if IsDouble(tasks) then
+         set tasks to FindAll('GRAY')
+         set temp to FindAll('BLACK')
+         while 0 < Size(temp) do
+            set tasks to PushBack(tasks, temp[0])
+            set temp to PopFront(temp)
+         end
+         if 0 = Size(tasks) then
+            call Report()
+         end
+      end
+      if 0 <> FreeAgents() & 0 <> Size(tasks) then
+         call Task('BLUE DRONE', tasks[0])
+         set tasks to PopFront(tasks)
+      end
+      if 0 = Size(tasks) then
+         set tasks to 0
+      end
+      return arg
+   end
+ "
+       },
+      "Left" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Left()
+         return 'Left'
+      else
+         call Leave()
+         return ''
+      end
+   end
+ "
+       },
+      "Right" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Right()
+         return 'Right'
+      else
+         call Leave()
+         return ''
+      end
+   end
+ "
+       },
+      "Up" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Up()
+         return 'Up'
+      else
+         call Leave()
+         return ''
+      end
+   end
+ "
+       },
+      "Down" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Down()
+         return 'Down'
+      else
+         call Leave()
+         return ''
+      end
+   end
+ "
+       },
+      "Grab" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         set seen to Look(MakeVec(0, 0, 0))
+         if !(('WHITE' = seen) | ('BLACK' = seen) | ('GRAY' = seen)) then
+            call Grab()
+            return 'Grab'
+         end
+      end
+      call Leave()
+      return ''
+   end
+ "
+       },
+      "Drop" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Drop()
+         return 'Drop'
+      else
+         call Leave()
+         return ''
+      end
+   end
+ "
+       },
+      "Do Nothing" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      return arg
+   end
+ "
+       },
+      "Wait" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         return 'Wait'
+      end
+      call Leave()
+      return ''
+   end
+ "
+       },
+      "Report" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      call Report()
+      return arg
+   end
+ "
+       },
+      "Task" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      if '' = arg then
+         call Task('GREEN DRONE', arg)
+         return 'Task'
+      end
+      call Leave()
+      return arg
+   end
+ "
+       },
+      "Make White" :
+       {
+         "Data" : "",
+         "Functions" :
+ "
+   function Update (arg) is
+      set seen to Look(MakeVec(0, 0, 0))
+      if 'BLUE' = seen then
+         if 0 = Size(GetInfo()) then
+            call Inform(1.0)
+            return arg
+         else
+            call Leave()
+         end
+      elseif ('BLACK' = seen) | ('GRAY' = seen) then
+         call Transform()
+      else
+         call Leave()
+      end
+      return arg
+   end
+ "
+       }
+    }
+ }

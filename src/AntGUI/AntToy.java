@@ -84,7 +84,7 @@ public final class AntToy
 
     public AntToy()
     {
-        frame = new JFrame("Ant Toy");
+        frame = new JFrame("Ant Toy v1.0");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLocation(10, 10);
         frame.setSize(1000, 1000);

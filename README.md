@@ -90,6 +90,7 @@ It has bitten me, myself, multiple times that the only valid string delimiters a
 * double Leave () # Removes the current State from the State queue. If the queue is now empty, pops the queue from the stack. If the stack is empty, this is an error.
 * double Left () # Returns one. Schedule a Left command.
 * double Look (vector) # Report the top-most thing that can be "seen" at the given location relative to this. BLUEs and GREENs don't see themselves. The value "ORANGE" is beyond the edge of the universe. The value "PINK" is beyond what is visible. GREEN is always seen first, then BLUE, then everything else in the reverse order they were moved onto the location.
+* array Path (vector) # Returns the least-energy path from the current location to the relative location passed in. This path is based on what can be seen, and is a list of "LEFT", "RIGHT", "DOWN", and "UP".
 * double Precede (array) # Returns one. Argument should be an array of string. Add the named States to the queue before the current State in their array order.
 * double Precede (string) # Returns one. Add the named State to the queue before the current State.
 * double Push (array) # Returns one. Argument should be an array of string. Push a new queue to the top of the stack and add these States to it in their array order.

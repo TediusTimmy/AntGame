@@ -35,6 +35,7 @@ import StateEngine.StdLib.Inventory;
 import StateEngine.StdLib.Leave;
 import StateEngine.StdLib.Left;
 import StateEngine.StdLib.Look;
+import StateEngine.StdLib.Path;
 import StateEngine.StdLib.Precede;
 import StateEngine.StdLib.Push;
 import StateEngine.StdLib.Abandon;
@@ -102,6 +103,7 @@ public class ExecutorBuilder extends esl2.parser.ExecutorBuilder
         addFunction("Inform", new Inform(), 1, executor, funs, frameInfo);
         addFunction("Inject", new Inject(), 1, executor, funs, frameInfo);
         addFunction("FindAll", new FindAll(), 1, executor, funs, frameInfo);
+        addFunction("Path", new Path(), 1, executor, funs, frameInfo);
 
         addFunction("Task", new Task(), 2, executor, funs, frameInfo);
     }
